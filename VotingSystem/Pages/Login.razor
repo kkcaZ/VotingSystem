@@ -1,0 +1,20 @@
+@page "/login"
+
+<EditForm Model="@_userDetails" class="@LoginStage">
+    <label>
+        National Insurance Number
+        <InputText @bind-Value="_userDetails.UniqueIdentifier"></InputText>
+    </label>
+    <label>
+        First Name(s)
+        <InputText @bind-Value="_userDetails.FirstNames"></InputText>
+    </label>
+    <label>
+        Surname
+        <InputText @bind-Value="_userDetails.Surname"></InputText>
+    </label>
+    <label>
+        Email
+        <InputText @bind-Value="_userDetails.EmailAddress"></InputText>
+    </label>
+</EditForm>
