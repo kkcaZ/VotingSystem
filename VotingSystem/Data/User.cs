@@ -16,9 +16,13 @@ public class User
     
     public string PostCode { get; set; } = string.Empty;
 
+    public string Address { get; set; } = string.Empty;
+
     public string UniqueIdentifier { get; set; } = string.Empty;
 
     public string Nationality { get; set; } = string.Empty;
+
+    public string Password { get; set; } = string.Empty;
 
     public List<Role> Roles { get; set; } = new List<Role>();
 }

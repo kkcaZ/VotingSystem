@@ -7,7 +7,7 @@
 }
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', Helvetica, Arial, sans-serif;
 }
 
 *:focus {
@@ -25,11 +25,25 @@ a, .btn-link {
 }
 
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    border-bottom: 1px solid #26b050;
 }
 
-.invalid {
-    outline: 1px solid red;
+input, select {
+    border: 0;
+    border-bottom: 1px solid rgba(50,50,50,0.8);
+    margin: .25rem 0;
+    padding: .25rem 0;
+    font-size: 1rem;
+    font-family: Roboto;
+    background-color: inherit;
+}
+
+.invalid, input.invalid {
+    border-bottom: 1px solid red;
+}
+
+.valid, input.valid {
+    border-bottom: 1px solid #26b050;
 }
 
 .validation-message {
