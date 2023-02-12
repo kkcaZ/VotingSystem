@@ -4,5 +4,5 @@ public enum ElectionType
 {
     FirstPastThePost,
     Preferential,
-    STV
+    SingleTransferableVote
 }

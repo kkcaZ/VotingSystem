@@ -1,8 +1,22 @@
+using VotingSystem.Data;
+using VotingSystem.DataAccess;
+using VotingSystem.DataAccess.Abstraction;
+using VotingSystem.Services;
+using VotingSystem.Services.Abstraction;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+// Data Access
+builder.Services.AddSingleton<IUserDataAccess, UserDataAccess>();
+builder.Services.AddSingleton<IElectionDataAccess, ElectionDataAccess>();
+
+// Services
+builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<IElectionService, ElectionService>();
 
 var app = builder.Build();
 

@@ -1,3 +1,8 @@
+:root {
+    --primary-color: #fff;
+    --secondary-color: #f3f2f1;
+}
+
 /* Element Styling */
 
 * {
@@ -18,6 +23,26 @@ a, .btn-link {
     color: #0071c1;
 }
 
+h1 {
+    margin-bottom: 1rem;
+}
+
+h2 {
+    margin-bottom:  .75rem;
+}
+
+.center {
+    margin-inline: auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.fa-black {
+    color: black;
+}
+
 /* Default Blazor Styles */
 
 .content {
@@ -30,11 +55,10 @@ a, .btn-link {
 
 input, select {
     border: 0;
-    border-bottom: 1px solid rgba(50,50,50,0.8);
+    border-bottom: 1px solid black;
     margin: .25rem 0;
     padding: .25rem 0;
     font-size: 1rem;
-    font-family: Roboto;
     background-color: inherit;
 }
 

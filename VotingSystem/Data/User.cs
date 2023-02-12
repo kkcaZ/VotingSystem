@@ -18,11 +18,14 @@ public class User
 
     public string Address { get; set; } = string.Empty;
 
-    public string UniqueIdentifier { get; set; } = string.Empty;
+    public string NationalIdentifier { get; set; } = string.Empty;
 
     public string Nationality { get; set; } = string.Empty;
 
     public string Password { get; set; } = string.Empty;
 
     public List<Role> Roles { get; set; } = new List<Role>();
+
+    public string ToString() =>
+        $"Id: {Id}, First Name(s): {FirstNames}, Surname: {Surname}, Phone Number: {PhoneNumber}, Email Address: {EmailAddress}, Post code: {PostCode}, Address: {Address}, National Identifier: {NationalIdentifier}, Nationality: {Nationality}";
 }
