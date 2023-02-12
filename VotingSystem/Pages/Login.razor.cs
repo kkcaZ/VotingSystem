@@ -1,32 +1,43 @@
 using Microsoft.AspNetCore.Components;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using VotingSystem.Data;
+using VotingSystem.Services.Abstraction;
 
 namespace VotingSystem.Pages;
 
 public partial class Login : ComponentBase
 {
+    // User
     private User _userDetails = new();
+    
+    // Styles
     private string _loginStage = "login-form stage-1";
+    private string _invalidLoginStyle = "";
+    
+    // Dropdown
     private List<string> _cultureList = new List<string>();
 
+    // Disables
     private bool _nextBtnDisabled = true;
-    private bool _idInputDisabled = false;
 
-    private string _confirmPassword = "";
-    private string _passwordValidationStyle = "";
+    [Inject] private IUserService _userService { get; set; }
+    [Inject] private ProtectedSessionStorage _sessionStorage { get; set; }
+    [Inject] private NavigationManager _navManager { get; set; }
 
     protected override Task OnInitializedAsync()
     {
         // Load countries into Nationality selection
-        foreach(var cultureInfo in CultureInfo.GetCultures(CultureTypes.SpecificCultures)) {
-            RegionInfo regionInfo = new RegionInfo(cultureInfo.LCID);
-
-            if (!_cultureList.Contains(regionInfo.EnglishName))
-                _cultureList.Add(regionInfo.EnglishName);
-        }
-
+        // Seems to be unsupported on linux :/
+        // foreach(var cultureInfo in CultureInfo.GetCultures(CultureTypes.SpecificCultures)) {
+        //     RegionInfo regionInfo = new RegionInfo(cultureInfo.LCID);
+        //
+        //     if (!_cultureList.Contains(regionInfo.EnglishName))
+        //         _cultureList.Add(regionInfo.EnglishName);
+        // }
+        
+        _cultureList.Add("United Kingdom");
         _cultureList.Sort();
 
         return base.OnInitializedAsync();
@@ -34,14 +45,7 @@ public partial class Login : ComponentBase
 
     private void NationalityUpdated(ChangeEventArgs e)
     {
-        // Change label name for Unique Identifier. E.g. for United Kingdom, this is National Insurance Number
-        if (e.Value?.ToString() == "United Kingdom")
-        {
-
-        }
-
         _loginStage = "login-form stage-2";
-        _idInputDisabled = false;
     }
 
     private void UniqueIdUpdated(ChangeEventArgs e)
@@ -59,38 +63,21 @@ public partial class Login : ComponentBase
             _nextBtnDisabled = true;
     }
 
-    private void NextButton()
+    /// <summary>
+    /// Handles displaying different stages of login / sign-up to the user
+    /// </summary>
+    private void SignInButton()
     {
-        if (_loginStage.Contains("stage-2"))
+        User user;
+        if (_userService.Authenticate(_userDetails.NationalIdentifier, _userDetails.Password, out user))
         {
-            _loginStage = "login-form stage-3";
-            _idInputDisabled = true;
+            _sessionStorage.SetAsync("authenticated", true);
+            _sessionStorage.SetAsync("userId", user.Id);
+            _navManager.NavigateTo("/");
         }
-    }
-
-    /// <summary>
-    /// Password confirmation input has changed
-    /// </summary>
-    /// <param name="e"></param>
-    private void ConfirmPasswordChanged(ChangeEventArgs e) => ValidatePassword(_userDetails.Password, e.Value?.ToString());
-
-    /// <summary>
-    /// Password input has changed
-    /// </summary>
-    /// <param name="e"></param>
-    private void PasswordChanged(ChangeEventArgs e) => ValidatePassword(e.Value.ToString(), _confirmPassword);
-
-    /// <summary>
-    /// Validate whether two passwords are equal
-    /// </summary>
-    /// <param name="e"></param>
-    private void ValidatePassword(string password, string confirmationPassword)
-    { 
-        if (password == confirmationPassword)
-            _passwordValidationStyle = "valid";
         else
-            _passwordValidationStyle = "invalid";
-
-        StateHasChanged();
+        {
+            _invalidLoginStyle = "invalid";
+        }
     }
 }

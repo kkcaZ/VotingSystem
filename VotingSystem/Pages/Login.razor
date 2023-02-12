@@ -1,57 +1,30 @@
 @page "/login"
-@using System.Globalization
 @layout BlankLayout
 
-<div class="login-form-page">
-    <div class="login-form-container">
-        <h1>Welcome</h1>
+<div class="full-page">
+    <div class="form-container">
+        <h1 class="text-center">Login</h1>
         <EditForm Model="@_userDetails" class="@_loginStage">
             <label for="nationality">
-                Nationality *
-                <select @bind="_userDetails.Nationality" @oninput="NationalityUpdated">
+                Please select your country
+                <select id="nationality" @bind="_userDetails.Nationality" @oninput="NationalityUpdated">
                     <option selected disabled></option>
-                    @foreach (string culture in _cultureList) {
+                    @foreach (string culture in _cultureList)
+                    {
                         <option>@culture</option>
                     }
                 </select>
             </label>
             <label for="uniqueId">
                 National Insurance Number *
-                <input id="uniqueId" name="uniqueId" type="text" placeholder="E.g. QQ 123456 C" disabled="@_idInputDisabled" @bind-value="_userDetails.UniqueIdentifier" @oninput="UniqueIdUpdated"></input>
-            </label>
-            <label>
-                First Name(s) *
-                <input id="firstNames" name="firstNames" type="text" @bind-value="_userDetails.FirstNames"></input>
-            </label>
-            <label>
-                Surname *
-                <input id="surname" name="surname" type="text" @bind-value="_userDetails.Surname"></input>
-            </label>
-            <label>
-                Email *
-                <input id="email" name="email" type="text" @bind-value="_userDetails.EmailAddress"></input>
-            </label>
-            <label>
-                Phone Number *
-                <input id="tel" name="phone" type="tel" @bind-value="_userDetails.PhoneNumber"></input>
-            </label>
-            <label>
-                Post Code *
-                <input id="postcode" name="postcode" type="text" @bind-value="_userDetails.PostCode"></input>
-            </label>
-            <label>
-                Address Line 1 *
-                <input id="address" name="address" type="text" @bind-value="_userDetails.Address"></input>
+                <input id="uniqueId" name="uniqueId" type="text" placeholder="E.g. QQ 123456 C" class="@_invalidLoginStyle" @bind-value="_userDetails.NationalIdentifier" @oninput="UniqueIdUpdated"/>
             </label>
             <label>
                 Password *
-                <input id="password" name="password" type="password" @bind-value="_userDetails.Password" @oninput="PasswordChanged"></input>
+                <input id="password" name="password" type="password" @bind-value="_userDetails.Password" class="@_invalidLoginStyle"/>
             </label>
-            <label>
-                Confirm Password *
-                <input id="confirmPassword" name="confirmPassword" type="password" @bind-value="_confirmPassword" @oninput="ConfirmPasswordChanged" class="@_passwordValidationStyle"></input>
-            </label>
-            <button id="nextBtn" disabled="@_nextBtnDisabled" @onclick="NextButton">Next</button>
+            <button id="nextBtn" class="btn btn-accent" disabled="@_nextBtnDisabled" @onclick="SignInButton">Login</button>
         </EditForm>
+        <p style="text-align: center; padding-top: 1rem;">Need an account? <a href="/signup">Sign-up</a></p>
     </div>
 </div>

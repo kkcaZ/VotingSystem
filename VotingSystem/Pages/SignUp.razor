@@ -1,0 +1,66 @@
+@page "/signup"
+@layout BlankLayout
+
+<div class="full-page">
+    <div class="form-container">
+        <h1 class="text-center">Sign Up</h1>
+        <EditForm Model="@_userDetails" class="@_signupStage">
+            <div class="column-container">
+                <div>
+                    <label for="nationality">
+                        Please select your country
+                        <select id="nationality" @bind="_userDetails.Nationality" @oninput="NationalityUpdated">
+                            <option selected disabled>Select Country</option>
+                            @foreach (string culture in _cultureList)
+                            {
+                                <option>@culture</option>
+                            }
+                        </select>
+                    </label>
+                    <label for="uniqueId">
+                        National Insurance Number *
+                        <input id="uniqueId" name="uniqueId" type="text" placeholder="E.g. QQ 123456 C" @bind-value="_userDetails.NationalIdentifier" @oninput="NationalIdUpdated"/>
+                    </label>
+                    <div class="column-container">
+                        <label style="padding-right: 1rem;">
+                            First Name(s) *
+                            <input id="firstNames" name="firstNames" type="text" @bind-value="_userDetails.FirstNames"/>
+                        </label>
+                        <label>
+                            Surname *
+                            <input id="surname" name="surname" type="text" @bind-value="_userDetails.Surname"/>
+                        </label>
+                    </div>
+                    <label>
+                        Email *
+                        <input id="email" name="email" type="text" @bind-value="_userDetails.EmailAddress"/>
+                    </label>
+                    <label>
+                        Phone Number *
+                        <input id="tel" name="phone" type="tel" @bind-value="_userDetails.PhoneNumber"/>
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Post Code *
+                        <input id="postcode" name="postcode" type="text" @bind-value="_userDetails.PostCode"/>
+                    </label>
+                    <label>
+                        Address Line 1 *
+                        <input id="address" name="address" type="text" @bind-value="_userDetails.Address"/>
+                    </label>
+                    <label>
+                        Password *
+                        <input id="password" name="password" type="password" @bind-value="_userDetails.Password" @oninput="PasswordChanged"/>
+                    </label>
+                    <label>
+                        Confirm Password *
+                        <input id="confirmPassword" name="confirmPassword" type="password" @bind-value="_confirmPassword" @oninput="ConfirmPasswordChanged" class="@_passwordValidationStyle"/>
+                    </label>
+                    <button id="nextBtn" class="btn btn-accent" disabled="@_signUpBtnDisabled" @onclick="SignUpButton">Sign up</button>
+                </div>
+            </div>
+        </EditForm>
+        <p style="text-align: center; padding-top: 1rem;">Already have an account? <a href="/login">Login</a></p>
+    </div>
+</div>

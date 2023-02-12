@@ -5,6 +5,10 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingSystem", "VotingSystem\VotingSystem.csproj", "{C4E09958-3154-45D6-9CBD-8485F00340A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VotingSystem.UnitTests", "VotingSystem.UnitTests\VotingSystem.UnitTests.csproj", "{B51BAF18-D767-4635-B566-22ECEE754F52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VotingSystem.IntegrationTests", "VotingSystem.IntegrationTests\VotingSystem.IntegrationTests.csproj", "{46AC499D-83A6-486B-AC8A-B2966F78BB70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{C4E09958-3154-45D6-9CBD-8485F00340A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4E09958-3154-45D6-9CBD-8485F00340A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4E09958-3154-45D6-9CBD-8485F00340A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B51BAF18-D767-4635-B566-22ECEE754F52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B51BAF18-D767-4635-B566-22ECEE754F52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B51BAF18-D767-4635-B566-22ECEE754F52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B51BAF18-D767-4635-B566-22ECEE754F52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46AC499D-83A6-486B-AC8A-B2966F78BB70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46AC499D-83A6-486B-AC8A-B2966F78BB70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46AC499D-83A6-486B-AC8A-B2966F78BB70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46AC499D-83A6-486B-AC8A-B2966F78BB70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
