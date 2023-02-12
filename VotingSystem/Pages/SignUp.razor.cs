@@ -1,6 +1,9 @@
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using VotingSystem.Data;
+using VotingSystem.Data.Enum;
 using VotingSystem.Services.Abstraction;
 
 namespace VotingSystem.Pages;
@@ -15,13 +18,17 @@ public partial class SignUp
 
     private string _confirmPassword = "";
     private string _passwordValidationStyle = "";
+
+    private Notification notification = new();
     
     [Inject] private IUserService _userService { get; set; }
+    [Inject] private ProtectedSessionStorage _sessionStorage { get; set; }
+    [Inject] private NavigationManager _navManager { get; set; }
 
     protected override Task OnInitializedAsync()
     {
         _cultureList.Add("United Kingdom");
-        
+
         return base.OnInitializedAsync();
     }
 
@@ -48,14 +55,55 @@ public partial class SignUp
     /// <summary>
     /// Handles displaying different stages of login / sign-up to the user
     /// </summary>
-    private void SignUpButton()
+    private async Task SignUpButton()
     {
         if (!ValidatePassword(_userDetails.Password, _confirmPassword))
-                return;
+        {
+            notification.Message = "Passwords do not match.";
+            notification.Header = "Invalid Field!";
+            notification.Type = NotificationType.Failure;
+            notification.Visible = true;
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_userDetails.NationalIdentifier) ||
+            string.IsNullOrWhiteSpace(_userDetails.FirstNames) ||
+            string.IsNullOrWhiteSpace(_userDetails.Surname) ||
+            string.IsNullOrWhiteSpace(_userDetails.EmailAddress) ||
+            string.IsNullOrWhiteSpace(_userDetails.PhoneNumber) ||
+            string.IsNullOrWhiteSpace(_userDetails.PostCode) ||
+            string.IsNullOrWhiteSpace(_userDetails.Address) ||
+            string.IsNullOrWhiteSpace(_userDetails.Password) ||
+            string.IsNullOrWhiteSpace(_confirmPassword)
+            )
+        {
+            notification.Header = "Empty Fields!";
+            notification.Message = "You must enter information in all fields.";
+            notification.Type = NotificationType.Failure;
+            notification.Visible = true;
+            return;
+        }
+
+        // Regex from: https://learn.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format
+        if (!Regex.IsMatch(_userDetails.EmailAddress,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                RegexOptions.IgnoreCase))
+        {
+            notification.Header = "Invalid Email!";
+            notification.Message = "Your email address is not formatted correctly.";
+            notification.Type = NotificationType.Failure;
+            notification.Visible = true;
+            return;
+        }
+
+        notification.Visible = false;
 
         if (_userService.AddUser(ref _userDetails))
         {
-            
+            _sessionStorage.SetAsync("authenticated", true);
+            _sessionStorage.SetAsync("userId", _userDetails.Id);
+            _navManager.NavigateTo("/");
         }
     }
 
