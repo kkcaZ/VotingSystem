@@ -149,6 +149,36 @@ nav > a:hover {
     margin: 2rem 0;
 }
 
+/* Notification */
+
+.notification {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 1rem;
+    padding: 1rem;
+    width: clamp(300px, 25%, 500px);
+    color: white;
+    text-align: center;
+    box-shadow: 5px 5px 3px 3px rgba(0,0,0,0.2);
+}
+
+.notification.success {
+    background-color: #26b050;
+}
+
+.notification.failure {
+    background-color: #b32121;
+}
+
+#closeNotification {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 1rem;
+    cursor: pointer;
+}
+
 /* Admin Page */
 .admin-panel {
     display: block;

@@ -64,3 +64,5 @@
         <p style="text-align: center; padding-top: 1rem;">Already have an account? <a href="/login">Login</a></p>
     </div>
 </div>
+
+<Notification Visible="@notification.Visible" Header="@notification.Header" Message="@notification.Message" Type="@notification.Type" OnVisibleChanged="@(visible => notification.Visible = visible)"/>

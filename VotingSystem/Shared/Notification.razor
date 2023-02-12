@@ -1,0 +1,38 @@
+@using VotingSystem.Data.Enum
+<div class="@Class" style="@(Visible == false ? "display: none;" : "")">
+    <h3>@Header</h3>
+    <p>@Message</p>
+    <span id="closeNotification" @onclick="() => { Visible = false; OnVisibleChanged?.Invoke(false); }">X</span>
+</div>
+
+@code
+{
+    private string Class = "notification";
+    
+    [Parameter]
+    public bool Visible { get; set; } = false;
+
+    [Parameter]
+    public Action<bool> OnVisibleChanged { get; set; }
+
+    [Parameter]
+    public NotificationType Type { get; set; }
+
+    [Parameter]
+    public string Message { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Header { get; set; } = string.Empty;
+    
+    protected override void OnParametersSet()
+    {
+        Class = $"notification {Type.ToString().ToLower()}";
+
+        if (Header == string.Empty)
+            Header = $"{Type}!";
+        
+        StateHasChanged();
+        
+        base.OnParametersSet();
+    }
+}
