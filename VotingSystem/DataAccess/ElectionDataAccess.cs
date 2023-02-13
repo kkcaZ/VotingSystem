@@ -20,7 +20,7 @@ public class ElectionDataAccess : IElectionDataAccess
             conn.Open();
 
             // Execute query
-            string sql = "SELECT * FROM [User] WHERE [Id] = @Id";
+            string sql = "SELECT * FROM [Election] WHERE [Id] = @Id";
             List<Election> elections = conn.Query<Election>(sql, new { Id = id }).ToList();
 
             if (elections.Count == 0)
@@ -29,6 +29,32 @@ public class ElectionDataAccess : IElectionDataAccess
             // Close connection
             conn.Close();
             return elections[0];
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
+    }
+
+    public List<ElectionInviteModel> GetElectionInvites(Guid electionId)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = @"SELECT * FROM [ElectionInvite] WHERE [ElectionId] = @ElectionId";
+            List<ElectionInviteModel> elections = conn.Query<ElectionInviteModel>(sql, new { ElectionId = electionId }).ToList();
+
+            if (elections.Count == 0)
+                return new List<ElectionInviteModel>();
+            
+            // Close connection
+            conn.Close();
+            return elections;
         }
         catch (SqlException e)
         {
