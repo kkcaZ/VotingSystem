@@ -74,6 +74,9 @@ tr:nth-child(2n + 1) {
     display: block;
     padding: 1rem;
     cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    text-align: left;
 }
 
 .btn:hover {
@@ -196,6 +199,7 @@ nav > a:hover {
 
 /* Admin Page */
 .admin-panel {
+    position: relative;
     display: block;
     background-color: var(--secondary-color);
     padding: 2rem;

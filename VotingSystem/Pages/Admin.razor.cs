@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.VisualBasic;
 using VotingSystem.Data;
 using VotingSystem.Data.Enum;
 using VotingSystem.Services.Abstraction;
@@ -9,15 +8,31 @@ using VotingSystem.Shared;
 
 namespace VotingSystem.Pages;
 
+public enum AdminPanel
+{
+    ElectionList,
+    CreateElection,
+    EditElection
+}
+
+public class ElectionFormModel
+{
+    public string Title { get; set; } = "Create an Election";
+    public Election Election { get; set; } = new();
+    public List<ElectionInviteModel> ElectionInvites { get; set; } = new();
+    public string CandidateEmail { get; set; } = string.Empty;
+    public string ButtonText { get; set; } = "Create Election";
+}
+
 public partial class Admin : AuthenticatedPage
 {
-    private Election _election = new();
     private List<Election>? _administeredElections;
     private List<string> _nations = new();
     private List<string> _types = new();
     
-    private string _candidateEmail = string.Empty;
-    private List<ElectionInviteModel> _electionInvites = new();
+    private AdminPanel _adminPanel = AdminPanel.ElectionList;
+
+    private ElectionFormModel _formModel = new ElectionFormModel();
 
     [Inject] private IElectionService _electionService { get; set; }
     [Inject] private IUserService _userService { get; set; }
@@ -45,14 +60,6 @@ public partial class Admin : AuthenticatedPage
             _types.Add(string.Join(" ", words));
         }
 
-        // Initialise default election
-        _election.Type = null;
-        var now = DateTime.Now;
-        _election.StartTime = new DateTime(now.Year, now.Month, now.Day);
-        _election.EndTime = new DateTime(now.Year, now.Month, now.Day);
-
-        _electionInvites = new();
-
         return base.OnInitializedAsync();
     }
 
@@ -69,26 +76,27 @@ public partial class Admin : AuthenticatedPage
 
     private void AddCandidateButton()
     {
-        _electionInvites.Add(new ElectionInviteModel()
+        _formModel.ElectionInvites.Add(new ElectionInviteModel()
         {
-            UserEmail = _candidateEmail,
+            UserEmail = _formModel.CandidateEmail,
             StatusId = ElectionInviteStatus.Pending
         });
-        _candidateEmail = string.Empty;
+        _formModel.CandidateEmail = string.Empty;
     }
     
     private void CreateElection()
     {
-        if (_election.EndTime < _election.StartTime)
+        if (_formModel.Election.EndTime < _formModel.Election.StartTime)
         {
             
             return;
         }
         
-        if (_electionService.CreateElection(_election, UserId, _electionInvites))
+        if (_electionService.CreateElection(_formModel.Election, UserId, _formModel.ElectionInvites))
         {
-            Console.WriteLine("Election Created");
             _administeredElections = _userService.GetUsersAdministeredElections(UserId);
+            OpenElectionListPanel();
+            StateHasChanged();
         }
     }
 
@@ -97,5 +105,21 @@ public partial class Admin : AuthenticatedPage
         _electionService.DeleteElection(id);
         _administeredElections = _userService.GetUsersAdministeredElections(UserId);
         StateHasChanged();
+    }
+
+    private void OpenCreateElectionPanel()
+    {
+        _adminPanel = AdminPanel.CreateElection;
+        _formModel = new ElectionFormModel();
+        _formModel.Election.Type = null;
+        var now = DateTime.Now;
+        _formModel.Election.StartTime = new DateTime(now.Year, now.Month, now.Day);
+        _formModel.Election.EndTime = new DateTime(now.Year, now.Month, now.Day);
+        _formModel.ElectionInvites = new();
+    }
+
+    private void OpenElectionListPanel()
+    {
+        _adminPanel = AdminPanel.ElectionList;
     }
 }
