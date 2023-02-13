@@ -3,7 +3,7 @@
 
 <div class="page-container">
     <h1 class="text-center page-title">Admin Panel</h1>
-    <div class="admin-panel">
+    <div class="admin-panel" style="@(_adminPanel == AdminPanel.ElectionList ? "" : "display: none;")">
         <h2 style="display: flex; align-items: center;">Your Elections <i class="fas fa-sync-alt btn" style="margin-left: auto;"></i></h2>
         <div class="election-list">
             @if (_administeredElections == null || _administeredElections.Count == 0)
@@ -41,19 +41,19 @@
                 </table>
             }
         </div>
-        <a class="btn btn-accent">Create an Election</a>
+        <a class="btn btn-accent" @onclick="OpenCreateElectionPanel">Create an Election</a>
     </div>
     
-    <div class="admin-panel">
+    <div class="admin-panel" style="@(_adminPanel == AdminPanel.CreateElection ? "" : "display: none;")">
         <h2>Create an Election</h2>
-        <EditForm Model="_election">
+        <EditForm Model="_formModel.Election">
             <label for="electionName">
                 Title
-                <input name="electionName" id="electionName" type="text" @bind="_election.Name"/>
+                <input name="electionName" id="electionName" type="text" @bind="_formModel.Election.Name"/>
             </label>
             <label for="nation">
                 Nation
-                <select name="nation" id="nation" @bind="_election.Nation">
+                <select name="nation" id="nation" @bind="_formModel.Election.Nation">
                     <option selected disabled>Select Nation</option>
                     @foreach (string nation in _nations)
                     {
@@ -63,7 +63,7 @@
             </label>
             <label for="type">
                 Type
-                <select name="type" id="type" @bind="_election.Type">
+                <select name="type" id="type" @bind="_formModel.Election.Type">
                     <option selected disabled></option>
                     @foreach (string type in _types)
                     {
@@ -74,24 +74,24 @@
             <div class="column-container">
                 <label style="padding-right: 1rem;">
                     Voting Start Time
-                    <input name="endTime" type="datetime-local" @bind="_election.StartTime"/>
+                    <input name="endTime" type="datetime-local" @bind="_formModel.Election.StartTime"/>
                 </label>
                 <label>
                     Voting End Time
-                    <input name="endTime" type="datetime-local" @bind="_election.EndTime"/>
+                    <input name="endTime" type="datetime-local" @bind="_formModel.Election.EndTime"/>
                 </label>
             </div>
             <div class="column-container">
                 <label>
                     Add Candidate
                     <div class="column-container align-center">
-                        <input name="candidate" type="email" placeholder="Candidate's Email" @bind="_candidateEmail" style="margin-right: 1rem;"/>
+                        <input name="candidate" type="email" placeholder="Candidate's Email" @bind="_formModel.CandidateEmail" style="margin-right: 1rem;"/>
                         <i class="btn fas fa-plus fa-black" @onclick="AddCandidateButton"></i>
                     </div>
                 </label>
                 <div>
                     Candidates
-                    @if (_electionInvites.Count == 0)
+                    @if (_formModel.ElectionInvites.Count == 0)
                     {
                         <p style="padding-top: 1rem;">No candidates added...</p>
                     }
@@ -104,7 +104,7 @@
                                 <th><!-- Delete btn --></th>
                                 
                             </tr>
-                            @foreach (var electionInvite in _electionInvites)
+                            @foreach (var electionInvite in _formModel.ElectionInvites)
                             {
                                 <tr>
                                     <td>@electionInvite.UserEmail</td>
@@ -120,5 +120,6 @@
             </div>
             <button id="nextBtn" class="btn btn-accent" @onclick="CreateElection">Create Election</button>
         </EditForm>
+        <span class="btn" @onclick="OpenElectionListPanel"><i class="fas fa-arrow-left"></i> Back</span> 
     </div>
 </div>
