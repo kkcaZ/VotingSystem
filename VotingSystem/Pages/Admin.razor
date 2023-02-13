@@ -91,18 +91,30 @@
                 </label>
                 <div>
                     Candidates
-                    @if (_candidates.Count == 0)
+                    @if (_electionInvites.Count == 0)
                     {
                         <p style="padding-top: 1rem;">No candidates added...</p>
                     }
                     else
                     {
-                        <ul style="padding-top: 1rem;">
-                            @foreach (var user in _candidates)
+                        <table class="candidate-invite-table">
+                            <tr>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th><!-- Delete btn --></th>
+                                
+                            </tr>
+                            @foreach (var electionInvite in _electionInvites)
                             {
-                                <li>@user</li>
+                                <tr>
+                                    <td>@electionInvite.UserEmail</td>
+                                    <td>@electionInvite.StatusId</td>
+                                    <td>
+                                        <i class="fas fa-trash" @onclick="@(() => Console.WriteLine(@electionInvite.ElectionId))"></i>
+                                    </td>
+                                </tr>
                             }
-                        </ul>
+                        </table>
                     }
                 </div>
             </div>

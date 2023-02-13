@@ -13,7 +13,7 @@ public class ElectionService : IElectionService
         _electionDataAccess = electionDataAccess;
     }
     
-    public bool CreateElection(Election election, Guid adminId, List<string> invitedEmails)
+    public bool CreateElection(Election election, Guid adminId, List<ElectionInviteModel> invitedEmails)
     {
         election.Id = Guid.NewGuid();
         var rowsAffected = _electionDataAccess.Add(election);
@@ -27,7 +27,7 @@ public class ElectionService : IElectionService
             return false;
 
         foreach (var email in invitedEmails)
-            _electionDataAccess.AddElectionInviteEmail(election.Id, email);
+            _electionDataAccess.AddElectionInviteEmail(election.Id, email.UserEmail);
 
         return true;
     }

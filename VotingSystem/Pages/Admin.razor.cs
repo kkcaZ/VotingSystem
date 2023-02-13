@@ -17,7 +17,7 @@ public partial class Admin : AuthenticatedPage
     private List<string> _types = new();
     
     private string _candidateEmail = string.Empty;
-    private List<string> _candidates = new();
+    private List<ElectionInviteModel> _electionInvites = new();
 
     [Inject] private IElectionService _electionService { get; set; }
     [Inject] private IUserService _userService { get; set; }
@@ -51,7 +51,7 @@ public partial class Admin : AuthenticatedPage
         _election.StartTime = new DateTime(now.Year, now.Month, now.Day);
         _election.EndTime = new DateTime(now.Year, now.Month, now.Day);
 
-        _candidates = new();
+        _electionInvites = new();
 
         return base.OnInitializedAsync();
     }
@@ -69,7 +69,11 @@ public partial class Admin : AuthenticatedPage
 
     private void AddCandidateButton()
     {
-        _candidates.Add(_candidateEmail);
+        _electionInvites.Add(new ElectionInviteModel()
+        {
+            UserEmail = _candidateEmail,
+            StatusId = ElectionInviteStatus.Pending
+        });
         _candidateEmail = string.Empty;
     }
     
@@ -81,7 +85,7 @@ public partial class Admin : AuthenticatedPage
             return;
         }
         
-        if (_electionService.CreateElection(_election, UserId, _candidates))
+        if (_electionService.CreateElection(_election, UserId, _electionInvites))
         {
             Console.WriteLine("Election Created");
             _administeredElections = _userService.GetUsersAdministeredElections(UserId);
