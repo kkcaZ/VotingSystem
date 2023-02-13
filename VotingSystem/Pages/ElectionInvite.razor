@@ -1,0 +1,27 @@
+@page "/profile/invites"
+@inherits AuthenticatedPage
+
+<div class="page-container">
+    <h1 class="text-center page-title">Your Invites</h1>
+    
+    @if (_invites.Count == 0)
+    {
+        <p class="text-center">Whoops! Looks like you haven't been invited to any elections.</p>
+    }
+    else
+    {
+        @foreach (var election in _invites)
+        {
+            <div class="invite-container">
+                <p>@election.Name</p>
+                <p>@election.Nation</p>
+                <p>@election.Type</p>
+                <button class="btn btn-success" @onclick="@(() => AcceptInvite(election.Id))"><i class="fas fa-check fa-lg"></i></button>
+                <button class="btn btn-failure" @onclick="@(() => DeclinedInvite(election.Id))"><i class="fas fa-times fa-lg"></i></button>
+            </div>
+        }
+    }
+</div>
+
+<Notification Header="@_notification.Header" Message="@_notification.Message" Type="@_notification.Type" Visible="@_notification.Visible" OnVisibleChanged="@(visible => { _notification.Visible = visible; } )"/>
+

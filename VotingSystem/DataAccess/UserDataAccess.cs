@@ -2,6 +2,7 @@ using System.Data.SqlClient;
 using VotingSystem.Data;
 using VotingSystem.DataAccess.Abstraction;
 using Dapper;
+using VotingSystem.Data.Enum;
 
 namespace VotingSystem.DataAccess;
 
@@ -36,11 +37,7 @@ public class UserDataAccess : IUserDataAccess
         }
     }
 
-    /// <summary>
-    /// Retrieves <see cref="User"/> with Email Address as the identifier
-    /// </summary>
-    /// <param name="email">Email of <see cref="User"/></param>
-    /// <returns><see cref="User"/> with given <paramref name="email"/></returns>
+    /// <inheritdoc />
     public User? GetByEmail(string email)
     {
         try
@@ -67,11 +64,65 @@ public class UserDataAccess : IUserDataAccess
         }
     }
     
-    /// <summary>
-    /// Retrieves <see cref="User"/> using the National Identifier
-    /// </summary>
-    /// <param name="nationalIdentifier">National Identifier of <see cref="User"/></param>
-    /// <returns><see cref="User"/> with given <paramref name="nationalIdentifier"/></returns>
+    /// <inheritdoc/>
+    public List<Election> GetUsersAdministeredElections(Guid id)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = @"
+                SELECT * FROM [Election] e
+                INNER JOIN ElectionAdmin ea
+                ON ea.ElectionId = e.Id
+                WHERE ea.UserId = @UserId
+            ";
+            List<Election> elections = conn.Query<Election>(sql, new { UserId = id }).ToList();
+
+            // Close connection
+            conn.Close();
+            return elections;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
+    }
+    
+    /// <inheritdoc/>
+    public List<Election> GetUsersElectionInvites(string email)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = @"
+                SELECT * FROM [Election] e
+                INNER JOIN ElectionInvite ei
+                ON ei.ElectionId = e.Id
+                WHERE ei.UserEmail = @Email AND ei.StatusId = 0
+            ";
+            List<Election> elections = conn.Query<Election>(sql, new { Email = email }).ToList();
+
+            // Close connection
+            conn.Close();
+            return elections;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
+    }
+    
+    /// <inheritdoc/>
     public User? GetByNationalIdentifier(string nationalIdentifier)
     {
         try
@@ -178,6 +229,36 @@ public class UserDataAccess : IUserDataAccess
             ";
             
             var rowsAffected = conn.Execute(sql, user);
+
+            // Close connection
+            conn.Close();
+            return rowsAffected;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e);
+            return 0;
+        }
+    }
+    
+    /// <inheritdoc/>
+    public int UpdateElectionInviteStatus(Guid electionId, string userEmail, ElectionInviteStatus status)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = @"
+                UPDATE [ElectionInvite] 
+                SET 
+                    [StatusId] = @StatusId
+                WHERE [ElectionId] = @ElectionId AND [UserEmail] = @UserEmail
+            ";
+            
+            var rowsAffected = conn.Execute(sql, new { StatusId = status, ElectionId = electionId, UserEmail = userEmail });
 
             // Close connection
             conn.Close();

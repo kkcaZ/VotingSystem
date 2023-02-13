@@ -20,6 +20,7 @@ public partial class Admin : AuthenticatedPage
     private List<string> _candidates = new();
 
     [Inject] private IElectionService _electionService { get; set; }
+    [Inject] private IUserService _userService { get; set; }
     [Inject] private ProtectedSessionStorage _sessionStorage { get; set; }
 
     protected override Task OnInitializedAsync()
@@ -46,8 +47,9 @@ public partial class Admin : AuthenticatedPage
 
         // Initialise default election
         _election.Type = null;
-        _election.StartTime = DateTime.Now;
-        _election.EndTime = DateTime.Now;
+        var now = DateTime.Now;
+        _election.StartTime = new DateTime(now.Year, now.Month, now.Day);
+        _election.EndTime = new DateTime(now.Year, now.Month, now.Day);
 
         _candidates = new();
 
@@ -60,7 +62,7 @@ public partial class Admin : AuthenticatedPage
         
         if (firstRender) {
             // Load administered elections
-            _administeredElections = _electionService.GetUsersElections(_userId);
+            _administeredElections = _userService.GetUsersAdministeredElections(UserId);
             StateHasChanged();
         }
     }
@@ -79,17 +81,17 @@ public partial class Admin : AuthenticatedPage
             return;
         }
         
-        if (_electionService.CreateElection(_election, _userId, _candidates))
+        if (_electionService.CreateElection(_election, UserId, _candidates))
         {
             Console.WriteLine("Election Created");
-            _administeredElections = _electionService.GetUsersElections(_userId);
+            _administeredElections = _userService.GetUsersAdministeredElections(UserId);
         }
     }
 
     private void DeleteElection(Guid id)
     {
         _electionService.DeleteElection(id);
-        _administeredElections = _electionService.GetUsersElections(_userId);
+        _administeredElections = _userService.GetUsersAdministeredElections(UserId);
         StateHasChanged();
     }
 }

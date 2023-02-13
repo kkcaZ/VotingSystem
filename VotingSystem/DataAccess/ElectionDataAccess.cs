@@ -2,6 +2,7 @@ using System.Data.SqlClient;
 using Dapper;
 using Microsoft.AspNetCore.Connections.Features;
 using VotingSystem.Data;
+using VotingSystem.Data.Enum;
 using VotingSystem.DataAccess.Abstraction;
 
 namespace VotingSystem.DataAccess;
@@ -28,39 +29,6 @@ public class ElectionDataAccess : IElectionDataAccess
             // Close connection
             conn.Close();
             return elections[0];
-        }
-        catch (SqlException e)
-        {
-            Console.WriteLine(e.Message);
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Returns all elections that are administered by given <paramref name="id"/>
-    /// </summary>
-    /// <param name="id">User Id</param>
-    /// <returns>List of elections that are owned by the user</returns>
-    public List<Election> GetUsersElections(Guid id)
-    {
-        try
-        {
-            // Open connection
-            using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            // Execute query
-            string sql = @"
-                SELECT * FROM [Election] e
-                INNER JOIN ElectionAdmin ea
-                ON ea.ElectionId = e.Id
-                WHERE ea.UserId = @UserId
-            ";
-            List<Election> elections = conn.Query<Election>(sql, new { UserId = id }).ToList();
-
-            // Close connection
-            conn.Close();
-            return elections;
         }
         catch (SqlException e)
         {
@@ -125,11 +93,11 @@ public class ElectionDataAccess : IElectionDataAccess
             conn.Open();
 
             string sql = @"
-                INSERT INTO [ElectionInvite] ([ElectionId], [UserEmail]) 
-                VALUES (@ElectionId, @UserEmail)
+                INSERT INTO [ElectionInvite] ([ElectionId], [UserEmail], [StatusId]) 
+                VALUES (@ElectionId, @UserEmail, @StatusId)
             ";
 
-            var rowsAffected = conn.Execute(sql, new { ElectionId = electionId, UserEmail = email });
+            var rowsAffected = conn.Execute(sql, new { ElectionId = electionId, UserEmail = email, StatusId = ElectionInviteStatus.Pending });
             
             conn.Close();
             return rowsAffected;

@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using VotingSystem.Data;
+using VotingSystem.Data.Enum;
 using VotingSystem.DataAccess.Abstraction;
 using VotingSystem.Services.Abstraction;
 
@@ -12,12 +14,47 @@ public class UserService : IUserService
     {
         _userDataAccess = userDataAccess;
     }
+
+    /// <inheritdoc/>
+    public User GetUserById(Guid id)
+    {
+        User user = _userDataAccess.GetById(id);
+        return user;
+    }
     
-    /// <summary>
-    /// Adds new user to the database if unique credentials do not clash
-    /// </summary>
-    /// <param name="user">User to add to the database</param>
-    /// <returns>True if user is added to the database, otherwise false</returns>
+    /// <inheritdoc/>
+    public List<Election> GetUsersAdministeredElections(Guid userId)
+    {
+        var elections = _userDataAccess.GetUsersAdministeredElections(userId);
+        return elections;
+    }
+
+    /// <inheritdoc/>
+    public List<Election> GetUsersElectionInvites(Guid userId)
+    {
+        User user = _userDataAccess.GetById(userId);
+
+        if (user == null)
+            return new List<Election>();
+        
+        List<Election> invitedElections = _userDataAccess.GetUsersElectionInvites(user.EmailAddress);
+        return invitedElections;
+    }
+
+    /// <inheritdoc/>
+    public bool UpdateElectionInvite(Guid userId, Guid electionId, ElectionInviteStatus status)
+    {
+        User user = GetUserById(userId);
+
+        var rowsAffected = _userDataAccess.UpdateElectionInviteStatus(electionId, user.EmailAddress, status);
+
+        if (rowsAffected == 0)
+            return false;
+
+        return true;
+    }
+
+    /// <inheritdoc/>
     public bool AddUser(ref User user)
     {
         // Check if user credentials already exist
@@ -33,6 +70,7 @@ public class UserService : IUserService
         return true;
     }
 
+    /// <inheritdoc/>
     public bool Authenticate(string nationalIdentifier, string password, out User? authenticatedUser)
     {
         var user = _userDataAccess.GetByNationalIdentifier(nationalIdentifier);

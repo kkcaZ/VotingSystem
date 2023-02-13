@@ -90,6 +90,16 @@ tr:nth-child(2n + 1) {
     background-color: black;
 }
 
+.btn-success {
+    color: white;
+    background-color: var(--success);
+}
+
+.btn-failure {
+    color: white;
+    background-color: var(--failure);
+}
+
 /* Default column container */
 
 .column-container {
@@ -155,12 +165,13 @@ nav > a:hover {
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    top: 1rem;
     padding: 1rem;
     width: clamp(300px, 25%, 500px);
     color: white;
     text-align: center;
     box-shadow: 5px 5px 3px 3px rgba(0,0,0,0.2);
+    transition: opacity 2s, top 1s;
+    transition-timing-function: cubic-bezier(0,.88,.14,.94);
 }
 
 .notification.success {
@@ -169,6 +180,10 @@ nav > a:hover {
 
 .notification.failure {
     background-color: #b32121;
+}
+
+.notification a {
+    color: #85c7f2;
 }
 
 #closeNotification {
@@ -193,4 +208,29 @@ nav > a:hover {
 
 .election-list table {
     width: 100%;
+}
+
+/* Election Invites */
+
+.invite-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    border: 1rem solid var(--secondary-color);
+}
+
+.invite-container p {
+    grid-column: span 2;
+    padding: 1rem;
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+.invite-container button {
+    grid-column: span 3;
+    padding: 1rem;
+}
+
+.invite-container button span {
+    height: 3rem;
 }

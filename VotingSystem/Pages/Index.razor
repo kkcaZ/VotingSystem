@@ -1,3 +1,6 @@
 ﻿@page "/"
-@using VotingSystem.Data.Enum
 @inherits AuthenticatedPage
+
+
+
+<Notification Header="@_notification.Header" Message="@_notification.Message" Type="@_notification.Type" Visible="@_notification.Visible" OnVisibleChanged="@(visible => { _notification.Visible = visible; } )"/> 
