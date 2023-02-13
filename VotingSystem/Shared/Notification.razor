@@ -1,7 +1,7 @@
 @using VotingSystem.Data.Enum
-<div class="@Class" style="@(Visible == false ? "display: none;" : "")">
+<div class="@Class" style="@(Visible == false ? "top: -10vh; opacity: 0;" : "top: 2rem; opacity: 1;")">
     <h3>@Header</h3>
-    <p>@Message</p>
+    <p>@((MarkupString)Message)</p>
     <span id="closeNotification" @onclick="() => { Visible = false; OnVisibleChanged?.Invoke(false); }">X</span>
 </div>
 

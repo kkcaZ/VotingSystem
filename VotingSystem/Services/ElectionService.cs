@@ -32,12 +32,6 @@ public class ElectionService : IElectionService
         return true;
     }
 
-    public List<Election> GetUsersElections(Guid userId)
-    {
-        var elections = _electionDataAccess.GetUsersElections(userId);
-        return elections;
-    }
-
     public bool DeleteElection(Guid electionId)
     {
         var rowsAffected = _electionDataAccess.Delete(electionId);

@@ -1,6 +1,8 @@
 :root {
     --primary-color: #fff;
     --secondary-color: #f3f2f1;
+    --success: #26b050;
+    --failure: #b32121;
 }
 
 /* Element Styling */
