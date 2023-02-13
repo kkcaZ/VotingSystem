@@ -33,7 +33,7 @@
                             <td>@election.StartTime</td>
                             <td>@election.EndTime</td>
                             <td>
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-edit" @onclick="@(() => OpenEditElectionPanel(@election.Id))"></i>
                                 <i class="fas fa-trash" @onclick="@(() => DeleteElection(@election.Id))"></i>
                             </td>
                         </tr>
@@ -45,7 +45,7 @@
     </div>
     
     <div class="admin-panel" style="@(_adminPanel == AdminPanel.CreateElection ? "" : "display: none;")">
-        <h2>Create an Election</h2>
+        <h2>@_formModel.Title</h2>
         <EditForm Model="_formModel.Election">
             <label for="electionName">
                 Title
@@ -118,7 +118,7 @@
                     }
                 </div>
             </div>
-            <button id="nextBtn" class="btn btn-accent" @onclick="CreateElection">Create Election</button>
+            <button id="nextBtn" class="btn btn-accent" @onclick="CreateElection">@_formModel.ButtonText</button>
         </EditForm>
         <span class="btn" @onclick="OpenElectionListPanel"><i class="fas fa-arrow-left"></i> Back</span> 
     </div>

@@ -12,6 +12,18 @@ public class ElectionService : IElectionService
     {
         _electionDataAccess = electionDataAccess;
     }
+
+    public Election GetElection(Guid electionId)
+    {
+        Election election = _electionDataAccess.GetById(electionId);
+        return election;
+    }
+
+    public List<ElectionInviteModel> GetElectionCandidateInvites(Guid electionId)
+    {
+        List<ElectionInviteModel> invites = _electionDataAccess.GetElectionInvites(electionId);
+        return invites;
+    }
     
     public bool CreateElection(Election election, Guid adminId, List<ElectionInviteModel> invitedEmails)
     {

@@ -117,6 +117,22 @@ public partial class Admin : AuthenticatedPage
         _formModel.Election.EndTime = new DateTime(now.Year, now.Month, now.Day);
         _formModel.ElectionInvites = new();
     }
+    
+    private void OpenEditElectionPanel(Guid electionId)
+    {
+        _adminPanel = AdminPanel.CreateElection;
+
+        var election = _electionService.GetElection(electionId);
+        var electionInvites = _electionService.GetElectionCandidateInvites(electionId);
+        
+        _formModel = new ElectionFormModel()
+        {
+            Title = $"Edit {election.Name}",
+            ButtonText = "Save Changes",
+            Election = election,
+            ElectionInvites = electionInvites
+        };
+    }
 
     private void OpenElectionListPanel()
     {
