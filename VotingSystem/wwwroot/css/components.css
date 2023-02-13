@@ -210,6 +210,11 @@ nav > a:hover {
     width: 100%;
 }
 
+.candidate-invite-table {
+    margin: 1rem 0;
+    width: 100%;
+}
+
 /* Election Invites */
 
 .invite-container {
