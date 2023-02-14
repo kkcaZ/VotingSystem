@@ -5,7 +5,9 @@ namespace VotingSystem.DataAccess.Abstraction;
 
 public interface IElectionDataAccess : IDataAccess<Election>
 {
+    public List<Election> GetByNation(string nation);
     public List<ElectionInviteModel> GetElectionInvites(Guid electionId);
+    public List<User> GetCandidates(Guid electionId);
     public int AddElectionAdmin(Guid userId, Guid electionId);
     public int AddElectionInviteEmail(Guid electionId, string email, ElectionInviteStatus status = ElectionInviteStatus.Pending);
     public int AddElectionInviteEmail(ElectionInviteModel electionInvite);

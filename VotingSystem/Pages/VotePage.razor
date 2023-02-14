@@ -1,0 +1,34 @@
+@page "/Vote"
+@page "/Vote/{ElectionId}"
+@inherits AuthenticatedPage
+
+<div class="page-container">
+    <h1 class="page-title text-center">@_election.Name</h1>
+    <div class="content-panel">
+        @if (_userVoted)
+        {
+            <p>Your vote has been submitted!</p>
+            <a href="/">Back to home</a>
+        }
+        else if (_candidates.Count == 0)
+        {
+            <p>There are no candidates for this election...</p>
+        }
+        else
+        {
+        <table class="full-width">
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+            @foreach (var candidate in _candidates)
+            {
+                <tr>
+                    <td>@candidate.FirstNames @candidate.Surname</td>
+                    <td><button class="btn btn-accent full-width text-center" @onclick="@(() => SubmitVote(@candidate.Id))">Vote</button></td>
+                </tr>
+            }
+        </table>
+        }
+    </div>
+</div>

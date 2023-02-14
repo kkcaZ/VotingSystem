@@ -43,4 +43,15 @@ CREATE TABLE [ElectionInvite]
     [StatusId] INT,
     FOREIGN KEY ([ElectionId]) REFERENCES [Election]([Id])
 )
+
+CREATE TABLE Votes (
+    ElectionId UNIQUEIDENTIFIER NOT NULL,
+    CandidateId UNIQUEIDENTIFIER NOT NULL,
+    VoterId UNIQUEIDENTIFIER NOT NULL,
+    Timestamp DATETIME NOT NULL,
+    FOREIGN KEY ([ElectionId]) REFERENCES [Election]([Id]),
+    FOREIGN KEY ([CandidateId]) REFERENCES [User]([Id]),
+    FOREIGN KEY ([VoterId]) REFERENCES [User]([Id])
+)
+
 SELECT Name from sys.databases;

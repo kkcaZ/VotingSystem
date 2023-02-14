@@ -13,10 +13,12 @@ builder.Services.AddServerSideBlazor();
 // Data Access
 builder.Services.AddSingleton<IUserDataAccess, UserDataAccess>();
 builder.Services.AddSingleton<IElectionDataAccess, ElectionDataAccess>();
+builder.Services.AddSingleton<IVoteDataAccess, VoteDataAccess>();
 
 // Services
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IElectionService, ElectionService>();
+builder.Services.AddSingleton<IVoteService, VoteService>();
 
 var app = builder.Build();
 

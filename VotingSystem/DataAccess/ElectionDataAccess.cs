@@ -37,6 +37,29 @@ public class ElectionDataAccess : IElectionDataAccess
         }
     }
 
+    public List<Election> GetByNation(string nation)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = "SELECT * FROM [Election] WHERE [Nation] = @Nation";
+            List<Election> elections = conn.Query<Election>(sql, new { Nation = nation }).ToList();
+
+            // Close connection
+            conn.Close();
+            return elections;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e.Message);
+            return new List<Election>();
+        }
+    }
+
     public List<ElectionInviteModel> GetElectionInvites(Guid electionId)
     {
         try
@@ -55,6 +78,34 @@ public class ElectionDataAccess : IElectionDataAccess
             // Close connection
             conn.Close();
             return elections;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
+    }
+
+    public List<User> GetCandidates(Guid electionId)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = @"
+                SELECT * FROM [ElectionCandidate] ec
+                INNER JOIN [User] u
+                ON u.[Id] = ec.[UserId]
+                WHERE ec.[ElectionId] = @ElectionId
+            ";
+            List<User> candidates = conn.Query<User>(sql, new { ElectionId = electionId }).ToList();
+
+            // Close connection
+            conn.Close();
+            return candidates;
         }
         catch (SqlException e)
         {
@@ -163,8 +214,8 @@ public class ElectionDataAccess : IElectionDataAccess
             conn.Open();
 
             string sql = @"
-                INSERT INTO [ElectionCandidate] ([UserId], [ElectionId], [Votes]) 
-                VALUES (@UserId, @ElectionId, @Votes)
+                INSERT INTO [ElectionCandidate] ([UserId], [ElectionId]) 
+                VALUES (@UserId, @ElectionId)
             ";
 
             var rowsAffected = conn.Execute(sql, new

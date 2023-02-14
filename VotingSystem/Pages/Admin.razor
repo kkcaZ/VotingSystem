@@ -3,7 +3,7 @@
 
 <div class="page-container">
     <h1 class="text-center page-title">Admin Panel</h1>
-    <div class="admin-panel" style="@(_adminPanel == AdminPanel.ElectionList ? "" : "display: none;")">
+    <div class="content-panel" style="@(_adminPanel == AdminPanel.ElectionList ? "" : "display: none;")">
         <h2 style="display: flex; align-items: center;">Your Elections <i class="fas fa-sync-alt btn" style="margin-left: auto;"></i></h2>
         <div class="election-list">
             @if (_administeredElections == null || _administeredElections.Count == 0)
@@ -43,7 +43,7 @@
         <a class="btn btn-accent" @onclick="OpenCreateElectionPanel">Create an Election</a>
     </div>
     
-    <div class="admin-panel" style="@(_adminPanel == AdminPanel.CreateElection ? "" : "display: none;")">
+    <div class="content-panel" style="@(_adminPanel == AdminPanel.CreateElection ? "" : "display: none;")">
         <h2>@_formModel.Title</h2>
         <EditForm Model="_formModel.Election">
             <label for="electionName">
