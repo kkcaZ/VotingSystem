@@ -16,10 +16,16 @@ public class ElectionService : IElectionService
         _userService = userService;
     }
 
-    public Election GetElection(Guid electionId)
+    public Election GetElectionById(Guid electionId)
     {
         Election election = _electionDataAccess.GetById(electionId);
         return election;
+    }
+
+    public List<Election> GetElectionsByNation(string nation)
+    {
+        var elections = _electionDataAccess.GetByNation(nation);
+        return elections;
     }
 
     public List<ElectionInviteModel> GetElectionCandidateInvites(Guid electionId)
@@ -27,7 +33,13 @@ public class ElectionService : IElectionService
         List<ElectionInviteModel> invites = _electionDataAccess.GetElectionInvites(electionId);
         return invites;
     }
-    
+
+    public List<User> GetCandidates(Guid electionId)
+    {
+        List<User> candidates = _electionDataAccess.GetCandidates(electionId);
+        return candidates;
+    }
+
     public bool CreateElection(Election election, Guid adminId, List<ElectionInviteModel> invitedEmails)
     {
         election.Id = Guid.NewGuid();

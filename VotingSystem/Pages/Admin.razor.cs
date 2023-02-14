@@ -137,7 +137,7 @@ public partial class Admin : AuthenticatedPage
     {
         _adminPanel = AdminPanel.CreateElection;
 
-        var election = _electionService.GetElection(electionId);
+        var election = _electionService.GetElectionById(electionId);
         var electionInvites = _electionService.GetElectionCandidateInvites(electionId);
         
         _formModel = new ElectionFormModel()
