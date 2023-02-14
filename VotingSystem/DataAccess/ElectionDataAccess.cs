@@ -155,11 +155,40 @@ public class ElectionDataAccess : IElectionDataAccess
         }
     }
 
+    public int AddCandidate(Guid userId, Guid electionId)
+    {
+        try
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            string sql = @"
+                INSERT INTO [ElectionCandidate] ([UserId], [ElectionId], [Votes]) 
+                VALUES (@UserId, @ElectionId, @Votes)
+            ";
+
+            var rowsAffected = conn.Execute(sql, new
+            {
+                UserId = userId,
+                ElectionId = electionId,
+                Votes = 0
+            });
+            
+            conn.Close();
+            return rowsAffected;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e);
+            return 0;
+        }
+    }
+
     public int Delete(Guid id)
     {
         try
         {
-            // DeleteAllCandidates(id);
+            DeleteAllCandidates(id);
             DeleteAllAdmins(id);
             DeleteAllElectionInvites(id);
             
@@ -255,6 +284,37 @@ public class ElectionDataAccess : IElectionDataAccess
             ";
             
             var rowsAffected = conn.Execute(sql, new { ElectionId = electionId });
+
+            // Close connection
+            conn.Close();
+            return rowsAffected;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e);
+            return 0;
+        }
+    }
+    
+    public int DeleteCandidate(Guid userId, Guid electionId)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = @"
+                DELETE FROM [ElectionCandidate]
+                WHERE [ElectionId] = @ElectionId AND [UserId] = @UserId
+            ";
+            
+            var rowsAffected = conn.Execute(sql, new
+            {
+                ElectionId = electionId,
+                UserId = userId
+            });
 
             // Close connection
             conn.Close();

@@ -1,4 +1,5 @@
 using VotingSystem.Data;
+using VotingSystem.Data.Enum;
 using VotingSystem.DataAccess.Abstraction;
 using VotingSystem.Services.Abstraction;
 
@@ -7,10 +8,12 @@ namespace VotingSystem.Services;
 public class ElectionService : IElectionService
 {
     private readonly IElectionDataAccess _electionDataAccess;
+    private readonly IUserService _userService;
 
-    public ElectionService(IElectionDataAccess electionDataAccess)
+    public ElectionService(IElectionDataAccess electionDataAccess, IUserService userService)
     {
         _electionDataAccess = electionDataAccess;
+        _userService = userService;
     }
 
     public Election GetElection(Guid electionId)
@@ -56,11 +59,13 @@ public class ElectionService : IElectionService
 
     public bool UpdateElection(Election election, List<ElectionInviteUpdate> inviteUpdates)
     {
+        // Update base details
         var rowsAffected = _electionDataAccess.Update(election);
 
         if (rowsAffected == 0)
             return false;
         
+        // Update election candidate info
         foreach (var update in inviteUpdates)
         {
             if (update.ChangeType == InviteChangeType.Created)
@@ -69,10 +74,38 @@ public class ElectionService : IElectionService
             }
             else
             {
+                // Revoke user invite
                 _electionDataAccess.DeleteUsersElectionInvite(update.ElectionInvite.ElectionId,
                     update.ElectionInvite.UserEmail);
+
+                // Delete user from candidate table
+                if (update.ElectionInvite.StatusId == ElectionInviteStatus.Accepted)
+                {
+                    var user = _userService.GetUserByEmail(update.ElectionInvite.UserEmail);
+                    _electionDataAccess.DeleteCandidate(update.ElectionInvite.ElectionId, user.Id);
+                }
             }
         }
+
+        return true;
+    }
+
+    public bool AddCandidate(Guid userId, Guid electionId)
+    {
+        var rowsAffected = _electionDataAccess.AddCandidate(userId, electionId);
+        
+        if (rowsAffected == 0)
+            return false;
+
+        return true;
+    }
+
+    public bool DeleteCandidate(Guid electionId, Guid userId)
+    {
+        var rowsAffected = _electionDataAccess.DeleteCandidate(userId, electionId);
+
+        if (rowsAffected == 0)
+            return false;
 
         return true;
     }

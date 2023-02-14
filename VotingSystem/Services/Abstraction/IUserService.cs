@@ -11,6 +11,13 @@ public interface IUserService
     /// <param name="id"></param>
     /// <returns></returns>
     public User GetUserById(Guid id);
+
+    /// <summary>
+    /// Gets user with <paramref name="email"/>
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    public User GetUserByEmail(string email);
     
     /// <summary>
     /// Gets elections that the user administers

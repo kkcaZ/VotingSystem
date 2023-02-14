@@ -10,6 +10,7 @@ namespace VotingSystem.Pages;
 public partial class ElectionInvite : AuthenticatedPage
 {
     [Inject] private IUserService _userService { get; set; }
+    [Inject] private IElectionService _electionService { get; set; }
 
     private List<Election> _invites = new();
     private Notification _notification = new();
@@ -28,6 +29,7 @@ public partial class ElectionInvite : AuthenticatedPage
 
     private void AcceptInvite(Guid electionId)
     {
+        _electionService.AddCandidate(_userId, electionId);
         _userService.UpdateElectionInvite(_userId, electionId, ElectionInviteStatus.Accepted);
         _invites = _userService.GetUsersElectionInvites(_userId);
 

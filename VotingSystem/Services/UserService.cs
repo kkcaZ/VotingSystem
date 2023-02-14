@@ -21,6 +21,14 @@ public class UserService : IUserService
         User user = _userDataAccess.GetById(id);
         return user;
     }
+
+    /// <inheritdoc/>
+    public User GetUserByEmail(string email)
+    {
+        User user = _userDataAccess.GetByEmail(email);
+        return user;
+    }
+
     
     /// <inheritdoc/>
     public List<Election> GetUsersAdministeredElections(Guid userId)

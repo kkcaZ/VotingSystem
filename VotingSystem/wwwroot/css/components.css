@@ -238,8 +238,5 @@ nav > a:hover {
 .invite-container button {
     grid-column: span 3;
     padding: 1rem;
-}
-
-.invite-container button span {
-    height: 3rem;
+    text-align: center;
 }
