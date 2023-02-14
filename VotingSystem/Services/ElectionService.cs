@@ -53,4 +53,27 @@ public class ElectionService : IElectionService
 
         return true;
     }
+
+    public bool UpdateElection(Election election, List<ElectionInviteUpdate> inviteUpdates)
+    {
+        var rowsAffected = _electionDataAccess.Update(election);
+
+        if (rowsAffected == 0)
+            return false;
+        
+        foreach (var update in inviteUpdates)
+        {
+            if (update.ChangeType == InviteChangeType.Created)
+            {
+                _electionDataAccess.AddElectionInviteEmail(update.ElectionInvite);
+            }
+            else
+            {
+                _electionDataAccess.DeleteUsersElectionInvite(update.ElectionInvite.ElectionId,
+                    update.ElectionInvite.UserEmail);
+            }
+        }
+
+        return true;
+    }
 }

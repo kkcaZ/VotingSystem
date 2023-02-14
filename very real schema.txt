@@ -40,6 +40,7 @@ CREATE TABLE [ElectionInvite]
 (
     [ElectionId] UNIQUEIDENTIFIER NOT NULL,
     [UserEmail] NVARCHAR(255),
+    [StatusId] INT,
     FOREIGN KEY ([ElectionId]) REFERENCES [Election]([Id])
 )
 SELECT Name from sys.databases;

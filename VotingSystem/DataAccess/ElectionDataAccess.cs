@@ -111,7 +111,27 @@ public class ElectionDataAccess : IElectionDataAccess
         }
     }
 
-    public int AddElectionInviteEmail(Guid electionId, string email)
+    public int AddElectionInviteEmail(Guid electionId, string email, ElectionInviteStatus status = ElectionInviteStatus.Pending)
+    {
+        try
+        {
+            var rowsAffected = AddElectionInviteEmail(new ElectionInviteModel()
+            {
+                ElectionId = electionId,
+                UserEmail = email,
+                StatusId = status
+            });
+
+            return rowsAffected;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e);
+            return 0;
+        }
+    }
+    
+    public int AddElectionInviteEmail(ElectionInviteModel electionInvite)
     {
         try
         {
@@ -123,7 +143,7 @@ public class ElectionDataAccess : IElectionDataAccess
                 VALUES (@ElectionId, @UserEmail, @StatusId)
             ";
 
-            var rowsAffected = conn.Execute(sql, new { ElectionId = electionId, UserEmail = email, StatusId = ElectionInviteStatus.Pending });
+            var rowsAffected = conn.Execute(sql, new { ElectionId = electionInvite.ElectionId, UserEmail = electionInvite.UserEmail, StatusId = electionInvite.StatusId });
             
             conn.Close();
             return rowsAffected;
@@ -246,6 +266,34 @@ public class ElectionDataAccess : IElectionDataAccess
             return 0;
         }
     }
+    
+    /// <inheritdoc/>
+    public int DeleteUsersElectionInvite(Guid electionId, string userEmail)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = @"
+                DELETE FROM [ElectionInvite]
+                WHERE [ElectionId] = @ElectionId AND [UserEmail] = @UserEmail
+            ";
+            
+            var rowsAffected = conn.Execute(sql, new { ElectionId = electionId, UserEmail = userEmail });
+
+            // Close connection
+            conn.Close();
+            return rowsAffected;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e);
+            return 0;
+        }
+    }
 
     public int Update(Election election)
     {
@@ -263,8 +311,8 @@ public class ElectionDataAccess : IElectionDataAccess
                     [Name] = @Name, 
                     [Nation] = @Nation, 
                     [Type] = @Type, 
-                    [StartDate] = @StartDate,
-                    [EndDate] = @EndDate
+                    [StartTime] = @StartTime,
+                    [EndTime] = @EndTime
                 WHERE [Id] = @Id
             ";
             

@@ -11,8 +11,7 @@ namespace VotingSystem.Pages;
 public enum AdminPanel
 {
     ElectionList,
-    CreateElection,
-    EditElection
+    CreateElection
 }
 
 public class ElectionFormModel
@@ -22,6 +21,7 @@ public class ElectionFormModel
     public List<ElectionInviteModel> ElectionInvites { get; set; } = new();
     public string CandidateEmail { get; set; } = string.Empty;
     public string ButtonText { get; set; } = "Create Election";
+    public List<ElectionInviteUpdate> InviteChanges { get; set; } = new();
 }
 
 public partial class Admin : AuthenticatedPage
@@ -69,19 +69,24 @@ public partial class Admin : AuthenticatedPage
         
         if (firstRender) {
             // Load administered elections
-            _administeredElections = _userService.GetUsersAdministeredElections(UserId);
+            _administeredElections = _userService.GetUsersAdministeredElections(_userId);
             StateHasChanged();
         }
     }
 
-    private void AddCandidateButton()
+    private void ElectionFormButtonPressed()
     {
-        _formModel.ElectionInvites.Add(new ElectionInviteModel()
+        switch (_formModel.ButtonText)
         {
-            UserEmail = _formModel.CandidateEmail,
-            StatusId = ElectionInviteStatus.Pending
-        });
-        _formModel.CandidateEmail = string.Empty;
+            case "Create Election":
+                CreateElection();
+                return;
+            case "Save Changes":
+                SaveElectionChanges();
+                return;
+            default:
+                return;
+        }
     }
     
     private void CreateElection()
@@ -92,9 +97,9 @@ public partial class Admin : AuthenticatedPage
             return;
         }
         
-        if (_electionService.CreateElection(_formModel.Election, UserId, _formModel.ElectionInvites))
+        if (_electionService.CreateElection(_formModel.Election, _userId, _formModel.ElectionInvites))
         {
-            _administeredElections = _userService.GetUsersAdministeredElections(UserId);
+            _administeredElections = _userService.GetUsersAdministeredElections(_userId);
             OpenElectionListPanel();
             StateHasChanged();
         }
@@ -103,8 +108,18 @@ public partial class Admin : AuthenticatedPage
     private void DeleteElection(Guid id)
     {
         _electionService.DeleteElection(id);
-        _administeredElections = _userService.GetUsersAdministeredElections(UserId);
+        _administeredElections = _userService.GetUsersAdministeredElections(_userId);
         StateHasChanged();
+    }
+
+    private void SaveElectionChanges()
+    {
+        if (_electionService.UpdateElection(_formModel.Election, _formModel.InviteChanges))
+        {
+            _adminPanel = AdminPanel.ElectionList;
+            _administeredElections = _userService.GetUsersAdministeredElections(_userId);
+            StateHasChanged();
+        }
     }
 
     private void OpenCreateElectionPanel()
@@ -137,5 +152,58 @@ public partial class Admin : AuthenticatedPage
     private void OpenElectionListPanel()
     {
         _adminPanel = AdminPanel.ElectionList;
+    }
+
+    private void AddCandidateInvite()
+    {
+        // Init invite
+        var electionInvite = new ElectionInviteModel()
+        {
+            ElectionId = _formModel.Election.Id,
+            UserEmail = _formModel.CandidateEmail,
+            StatusId = ElectionInviteStatus.Pending
+        };
+        
+        // Add election invite
+        _formModel.ElectionInvites.Add(electionInvite);
+        
+        // Track change in invite
+        _formModel.InviteChanges.Add(new()
+        {
+            ElectionInvite = electionInvite,
+            ChangeType = InviteChangeType.Created
+        });
+
+        // Empty the text input for emails (better ux)
+        _formModel.CandidateEmail = string.Empty;
+    }
+    
+    private void RemoveCandidateInvite(Guid electionId, string userEmail, ElectionInviteStatus status)
+    {
+        // Init invite
+        var invite = _formModel.ElectionInvites.FirstOrDefault(x => x.ElectionId == electionId && x.UserEmail == userEmail);
+
+        // Remove from invite list
+        _formModel.ElectionInvites.Remove(invite);
+        
+        // If item has been added during this edit / create session, then just remove from the changes
+        var existingAddedInvite = _formModel.InviteChanges.Where(x =>
+            x.ElectionInvite.ElectionId == electionId &&
+            x.ElectionInvite.UserEmail == userEmail &&
+            x.ChangeType == InviteChangeType.Created).ToList();
+
+        if (existingAddedInvite.Count > 0)
+        {
+            _formModel.InviteChanges.Remove(existingAddedInvite.First());
+            _formModel.ElectionInvites.Remove(invite);
+            return;
+        }
+        
+        // Add Invite Change that indicates item should be removed from database
+        _formModel.InviteChanges.Add(new ElectionInviteUpdate()
+        {
+            ElectionInvite = invite,
+            ChangeType = InviteChangeType.Deleted
+        });
     }
 }

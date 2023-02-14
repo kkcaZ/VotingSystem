@@ -22,7 +22,6 @@
                         <th>Start Time</th>
                         <th>End Time</th>
                         <th><!-- Edit btn --></th>
-                        
                     </tr>
                     @foreach (var election in _administeredElections)
                     {
@@ -86,7 +85,7 @@
                     Add Candidate
                     <div class="column-container align-center">
                         <input name="candidate" type="email" placeholder="Candidate's Email" @bind="_formModel.CandidateEmail" style="margin-right: 1rem;"/>
-                        <i class="btn fas fa-plus fa-black" @onclick="AddCandidateButton"></i>
+                        <i class="btn fas fa-plus fa-black" @onclick="AddCandidateInvite"></i>
                     </div>
                 </label>
                 <div>
@@ -110,7 +109,7 @@
                                     <td>@electionInvite.UserEmail</td>
                                     <td>@electionInvite.StatusId</td>
                                     <td>
-                                        <i class="fas fa-trash" @onclick="@(() => Console.WriteLine(@electionInvite.ElectionId))"></i>
+                                        <i class="fas fa-trash" @onclick="@(() => RemoveCandidateInvite(electionInvite.ElectionId, electionInvite.UserEmail, electionInvite.StatusId))"></i>
                                     </td>
                                 </tr>
                             }
@@ -118,7 +117,7 @@
                     }
                 </div>
             </div>
-            <button id="nextBtn" class="btn btn-accent" @onclick="CreateElection">@_formModel.ButtonText</button>
+            <button id="nextBtn" class="btn btn-accent" @onclick="ElectionFormButtonPressed">@_formModel.ButtonText</button>
         </EditForm>
         <span class="btn" @onclick="OpenElectionListPanel"><i class="fas fa-arrow-left"></i> Back</span> 
     </div>

@@ -15,10 +15,10 @@ public partial class Index : AuthenticatedPage
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (!firstRender || UserId == null)
+        if (!firstRender || _userId == null)
             return;
 
-        var invites = _userService.GetUsersElectionInvites(UserId);
+        var invites = _userService.GetUsersElectionInvites(_userId);
 
         if (invites.Count > 0)
         {

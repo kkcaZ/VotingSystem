@@ -5,7 +5,7 @@ namespace VotingSystem.Shared;
 
 public class AuthenticatedPage : ComponentBase
 {
-    protected Guid UserId;
+    protected Guid _userId;
     
     [Inject] private ProtectedSessionStorage _sessionStorage { get; set; }
     [Inject] private NavigationManager _navManager { get; set; }
@@ -24,7 +24,7 @@ public class AuthenticatedPage : ComponentBase
             if (!userId.Success)
                 _navManager.NavigateTo("/login");
 
-            UserId = userId.Value;
+            _userId = userId.Value;
         }
 
         await base.OnInitializedAsync();
