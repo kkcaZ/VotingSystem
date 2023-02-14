@@ -18,18 +18,18 @@ public partial class ElectionInvite : AuthenticatedPage
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (!firstRender || UserId == null)
+        if (!firstRender || _userId == null)
             return;
 
-        _invites = _userService.GetUsersElectionInvites(UserId);
+        _invites = _userService.GetUsersElectionInvites(_userId);
         if (_invites.Count > 0) 
             StateHasChanged();
     }
 
     private void AcceptInvite(Guid electionId)
     {
-        _userService.UpdateElectionInvite(UserId, electionId, ElectionInviteStatus.Accepted);
-        _invites = _userService.GetUsersElectionInvites(UserId);
+        _userService.UpdateElectionInvite(_userId, electionId, ElectionInviteStatus.Accepted);
+        _invites = _userService.GetUsersElectionInvites(_userId);
 
         _notification.Header = "Accepted!";
         _notification.Message = "You have accepted the election invite.";
@@ -40,8 +40,8 @@ public partial class ElectionInvite : AuthenticatedPage
 
     private void DeclinedInvite(Guid electionId)
     {
-        _userService.UpdateElectionInvite(UserId, electionId, ElectionInviteStatus.Declined);
-        _invites = _userService.GetUsersElectionInvites(UserId);
+        _userService.UpdateElectionInvite(_userId, electionId, ElectionInviteStatus.Declined);
+        _invites = _userService.GetUsersElectionInvites(_userId);
         
         _notification.Header = "Declined!";
         _notification.Message = "You have declined the election invite.";
