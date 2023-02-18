@@ -106,6 +106,14 @@ tr:nth-child(2n + 1) {
     background-color: var(--failure);
 }
 
+.btn-icon {
+    cursor: pointer;
+}
+
+.btn-icon:hover {
+    opacity: 0.8;
+}
+
 /* Default column container */
 
 .column-container {

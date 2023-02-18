@@ -3,122 +3,160 @@
 
 <div class="page-container">
     <h1 class="text-center page-title">Admin Panel</h1>
-    <div class="content-panel" style="@(_adminPanel == AdminPanel.ElectionList ? "" : "display: none;")">
-        <h2 style="display: flex; align-items: center;">Your Elections <i class="fas fa-sync-alt btn" style="margin-left: auto;"></i></h2>
-        <div class="election-list">
-            @if (_administeredElections == null || _administeredElections.Count == 0)
-            {
-                <p>
-                    You do not currently administer any elections...
-                </p>
-            }
-            else
-            {
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Nation</th>
-                        <th>Type</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th><!-- Edit btn --></th>
-                    </tr>
-                    @foreach (var election in _administeredElections)
-                    {
-                        <tr>
-                            <td>@election.Name</td>
-                            <td>@election.Nation</td>
-                            <td>@election.Type</td>
-                            <td>@election.StartTime</td>
-                            <td>@election.EndTime</td>
-                            <td>
-                                <i class="fas fa-edit" @onclick="@(() => OpenEditElectionPanel(@election.Id))"></i>
-                                <i class="fas fa-trash" @onclick="@(() => DeleteElection(@election.Id))"></i>
-                            </td>
-                        </tr>
-                    }
-                </table>
-            }
-        </div>
-        <a class="btn btn-accent" @onclick="OpenCreateElectionPanel">Create an Election</a>
-    </div>
     
-    <div class="content-panel" style="@(_adminPanel == AdminPanel.CreateElection ? "" : "display: none;")">
-        <h2>@_formModel.Title</h2>
-        <EditForm Model="_formModel.Election">
-            <label for="electionName">
-                Title
-                <input name="electionName" id="electionName" type="text" @bind="_formModel.Election.Name"/>
-            </label>
-            <label for="nation">
-                Nation
-                <select name="nation" id="nation" @bind="_formModel.Election.Nation">
-                    <option selected disabled>Select Nation</option>
-                    @foreach (string nation in _nations)
+    @switch (_adminPanel)
+    {
+        case AdminPanel.ElectionList:
+            <div class="content-panel">
+                <h2 style="display: flex; align-items: center;">Your Elections <i class="fas fa-sync-alt btn" style="margin-left: auto;"></i></h2>
+                <div class="election-list">
+                    @if (_administeredElections == null || _administeredElections.Count == 0)
                     {
-                        <option>@nation</option>
-                    }
-                </select>
-            </label>
-            <label for="type">
-                Type
-                <select name="type" id="type" @bind="_formModel.Election.Type">
-                    <option selected disabled></option>
-                    @foreach (string type in _types)
-                    {
-                        <option value="@type.Replace(" ", "")">@type</option>
-                    }
-                </select>
-            </label>
-            <div class="column-container">
-                <label style="padding-right: 1rem;">
-                    Voting Start Time
-                    <input name="endTime" type="datetime-local" @bind="_formModel.Election.StartTime"/>
-                </label>
-                <label>
-                    Voting End Time
-                    <input name="endTime" type="datetime-local" @bind="_formModel.Election.EndTime"/>
-                </label>
-            </div>
-            <div class="column-container">
-                <label>
-                    Add Candidate
-                    <div class="column-container align-center">
-                        <input name="candidate" type="email" placeholder="Candidate's Email" @bind="_formModel.CandidateEmail" style="margin-right: 1rem;"/>
-                        <i class="btn fas fa-plus fa-black" @onclick="AddCandidateInvite"></i>
-                    </div>
-                </label>
-                <div>
-                    Candidates
-                    @if (_formModel.ElectionInvites.Count == 0)
-                    {
-                        <p style="padding-top: 1rem;">No candidates added...</p>
+                        <p>
+                            You do not currently administer any elections...
+                        </p>
                     }
                     else
                     {
-                        <table class="candidate-invite-table">
+                        <table>
                             <tr>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th><!-- Delete btn --></th>
-                                
+                                <th>Name</th>
+                                <th>Nation</th>
+                                <th>Type</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th><!-- Edit btn --></th>
                             </tr>
-                            @foreach (var electionInvite in _formModel.ElectionInvites)
+                            @foreach (var election in _administeredElections)
                             {
                                 <tr>
-                                    <td>@electionInvite.UserEmail</td>
-                                    <td>@electionInvite.StatusId</td>
+                                    <td>@election.Name</td>
+                                    <td>@election.Nation</td>
+                                    <td>@election.Type</td>
+                                    <td>@election.StartTime</td>
+                                    <td>@election.EndTime</td>
                                     <td>
-                                        <i class="fas fa-trash" @onclick="@(() => RemoveCandidateInvite(electionInvite.ElectionId, electionInvite.UserEmail, electionInvite.StatusId))"></i>
+                                        <i class="btn-icon fas fa-edit" @onclick="@(() => OpenEditElectionPanel(@election.Id))"></i>
+                                        <i class="btn-icon fas fa-trash" @onclick="@(() => DeleteElection(@election.Id))"></i>
+                                        <i class="btn-icon fas fa-info-circle" @onclick="@(() => ViewElectionDetails(@election.Id))"></i>
                                     </td>
                                 </tr>
                             }
                         </table>
                     }
                 </div>
+                <a class="btn btn-accent" @onclick="OpenCreateElectionPanel">Create an Election</a>
             </div>
-            <button id="nextBtn" class="btn btn-accent" @onclick="ElectionFormButtonPressed">@_formModel.ButtonText</button>
-        </EditForm>
-        <span class="btn" @onclick="OpenElectionListPanel"><i class="fas fa-arrow-left"></i> Back</span> 
-    </div>
+            break;
+        case AdminPanel.CreateElection:
+            <div class="content-panel">
+                <h2>@_formModel.Title</h2>
+                <EditForm Model="_formModel.Election">
+                    <label for="electionName">
+                        Title
+                        <input name="electionName" id="electionName" type="text" @bind="_formModel.Election.Name"/>
+                    </label>
+                    <label for="nation">
+                        Nation
+                        <select name="nation" id="nation" @bind="_formModel.Election.Nation">
+                            <option selected disabled>Select Nation</option>
+                            @foreach (string nation in _nations)
+                            {
+                                <option>@nation</option>
+                            }
+                        </select>
+                    </label>
+                    <label for="type">
+                        Type
+                        <select name="type" id="type" @bind="_formModel.Election.Type">
+                            <option selected disabled></option>
+                            @foreach (string type in _types)
+                            {
+                                <option value="@type.Replace(" ", "")">@type</option>
+                            }
+                        </select>
+                    </label>
+                    <div class="column-container">
+                        <label style="padding-right: 1rem;">
+                            Voting Start Time
+                            <input name="endTime" type="datetime-local" @bind="_formModel.Election.StartTime"/>
+                        </label>
+                        <label>
+                            Voting End Time
+                            <input name="endTime" type="datetime-local" @bind="_formModel.Election.EndTime"/>
+                        </label>
+                    </div>
+                    <div class="column-container">
+                        <label>
+                            Add Candidate
+                            <div class="column-container align-center">
+                                <input name="candidate" type="email" placeholder="Candidate's Email" @bind="_formModel.CandidateEmail" style="margin-right: 1rem;"/>
+                                <i class="btn fas fa-plus fa-black" @onclick="AddCandidateInvite"></i>
+                            </div>
+                        </label>
+                        <div>
+                            Candidates
+                            @if (_formModel.ElectionInvites.Count == 0)
+                            {
+                                <p style="padding-top: 1rem;">No candidates added...</p>
+                            }
+                            else
+                            {
+                                <table class="candidate-invite-table">
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th><!-- Delete btn --></th>
+                                        
+                                    </tr>
+                                    @foreach (var electionInvite in _formModel.ElectionInvites)
+                                    {
+                                        <tr>
+                                            <td>@electionInvite.UserEmail</td>
+                                            <td>@electionInvite.StatusId</td>
+                                            <td>
+                                                <i class="fas fa-trash" @onclick="@(() => RemoveCandidateInvite(electionInvite.ElectionId, electionInvite.UserEmail, electionInvite.StatusId))"></i>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            }
+                        </div>
+                    </div>
+                    <button id="nextBtn" class="btn btn-accent" @onclick="ElectionFormButtonPressed">@_formModel.ButtonText</button>
+                </EditForm>
+                <span class="btn" @onclick="OpenElectionListPanel"><i class="fas fa-arrow-left"></i> Back</span> 
+            </div>
+            break;
+        case AdminPanel.ViewElection:
+            <div class="content-panel">
+                <h2 style="display: flex; align-items: center;">@_election.Name</h2>
+                <div class="election-list">
+                    @if (_administeredElections == null || _administeredElections.Count == 0)
+                    {
+                        <p>
+                            No candidates currently registered for this election
+                        </p>
+                    }
+                    else
+                    {
+                        <table>
+                            <tr>
+                                <th>Candidate Name</th>
+                                <th>Votes</th>
+                            </tr>
+                            @foreach (var candidate in _candidates)
+                            {
+                                <tr>
+                                    <td>@candidate.FirstNames @candidate.Surname</td>
+                                    <td>@_candidateVotes.FirstOrDefault(c => c.candidateId == candidate.Id).votes</td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
+                <span class="btn" @onclick="OpenElectionListPanel"><i class="fas fa-arrow-left"></i> Back</span>
+            </div>
+            break;
+    }
 </div>

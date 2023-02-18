@@ -11,7 +11,8 @@ namespace VotingSystem.Pages;
 public enum AdminPanel
 {
     ElectionList,
-    CreateElection
+    CreateElection,
+    ViewElection
 }
 
 public class ElectionFormModel
@@ -26,27 +27,36 @@ public class ElectionFormModel
 
 public partial class Admin : AuthenticatedPage
 {
+    [Inject] private IElectionService _electionService { get; set; }
+    [Inject] private IVoteService _voteService { get; set; }
+    [Inject] private IUserService _userService { get; set; }
+    
+    // Elections that user current administers
     private List<Election>? _administeredElections;
+    
+    // Election select values
     private List<string> _nations = new();
     private List<string> _types = new();
     
+    // Dictates which panel is showing
     private AdminPanel _adminPanel = AdminPanel.ElectionList;
 
+    // Create / Edit election form
     private ElectionFormModel _formModel = new ElectionFormModel();
 
-    [Inject] private IElectionService _electionService { get; set; }
-    [Inject] private IUserService _userService { get; set; }
-    [Inject] private ProtectedSessionStorage _sessionStorage { get; set; }
+    // View Election
+    private Election _election = new();
+    private List<User> _candidates = new();
+    private List<(Guid candidateId, int votes)> _candidateVotes = new();
 
     protected override Task OnInitializedAsync()
     {
-        // Create nations
+        // Initialise form selection fields
         _nations = new List<string>()
         {
             "United Kingdom"
         };
-
-        // Create Election types
+        
         var electionTypes = Enum.GetValues(typeof(ElectionType));
         foreach (var type in electionTypes)
         {
@@ -68,7 +78,6 @@ public partial class Admin : AuthenticatedPage
         await base.OnAfterRenderAsync(firstRender);
         
         if (firstRender) {
-            // Load administered elections
             _administeredElections = _userService.GetUsersAdministeredElections(_userId);
             StateHasChanged();
         }
@@ -110,6 +119,15 @@ public partial class Admin : AuthenticatedPage
         _electionService.DeleteElection(id);
         _administeredElections = _userService.GetUsersAdministeredElections(_userId);
         StateHasChanged();
+    }
+
+    private void ViewElectionDetails(Guid electionId)
+    {
+        _election = _electionService.GetElectionById(electionId);
+        _candidates = _electionService.GetCandidates(electionId);
+        _candidateVotes = _voteService.CountElectionVotes(electionId);
+        
+        _adminPanel = AdminPanel.ViewElection;
     }
 
     private void SaveElectionChanges()
@@ -180,7 +198,6 @@ public partial class Admin : AuthenticatedPage
     
     private void RemoveCandidateInvite(Guid electionId, string userEmail, ElectionInviteStatus status)
     {
-        // Init invite
         var invite = _formModel.ElectionInvites.FirstOrDefault(x => x.ElectionId == electionId && x.UserEmail == userEmail);
 
         // Remove from invite list
