@@ -28,3 +28,5 @@
         <p style="text-align: center; padding-top: 1rem;">Need an account? <a href="/signup">Sign-up</a></p>
     </div>
 </div>
+
+<Notification Visible="@_notification.Visible" Header="@_notification.Header" Message="@_notification.Message" Type="@_notification.Type" OnVisibleChanged="@(visible => _notification.Visible = visible)"/>
