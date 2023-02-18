@@ -242,6 +242,7 @@ public class ElectionDataAccess : IElectionDataAccess
             DeleteAllCandidates(id);
             DeleteAllAdmins(id);
             DeleteAllElectionInvites(id);
+            DeleteAllVotes(id);
             
             // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
@@ -331,6 +332,33 @@ public class ElectionDataAccess : IElectionDataAccess
             // Execute query
             string sql = @"
                 DELETE FROM [ElectionInvite]
+                WHERE [ElectionId] = @ElectionId
+            ";
+            
+            var rowsAffected = conn.Execute(sql, new { ElectionId = electionId });
+
+            // Close connection
+            conn.Close();
+            return rowsAffected;
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine(e);
+            return 0;
+        }
+    }
+    
+    public int DeleteAllVotes(Guid electionId)
+    {
+        try
+        {
+            // Open connection
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            // Execute query
+            string sql = @"
+                DELETE FROM [Vote]
                 WHERE [ElectionId] = @ElectionId
             ";
             
