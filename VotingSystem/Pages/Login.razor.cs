@@ -3,12 +3,17 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using VotingSystem.Data;
+using VotingSystem.Data.Enum;
 using VotingSystem.Services.Abstraction;
 
 namespace VotingSystem.Pages;
 
 public partial class Login : ComponentBase
 {
+    [Inject] private IUserService _userService { get; set; }
+    [Inject] private ProtectedSessionStorage _sessionStorage { get; set; }
+    [Inject] private NavigationManager _navManager { get; set; }
+    
     // User
     private User _userDetails = new();
     
@@ -21,10 +26,8 @@ public partial class Login : ComponentBase
 
     // Disables
     private bool _nextBtnDisabled = true;
-
-    [Inject] private IUserService _userService { get; set; }
-    [Inject] private ProtectedSessionStorage _sessionStorage { get; set; }
-    [Inject] private NavigationManager _navManager { get; set; }
+    
+    private Notification _notification = new();
 
     protected override Task OnInitializedAsync()
     {
@@ -78,6 +81,11 @@ public partial class Login : ComponentBase
         else
         {
             _invalidLoginStyle = "invalid";
+            _notification.Header = "Invalid Login!";
+            _notification.Message = "Your National Insurance Number / Password were entered incorrectly!";
+            _notification.Type = NotificationType.Failure;
+            _notification.Visible = true;
+            StateHasChanged();
         }
     }
 }
