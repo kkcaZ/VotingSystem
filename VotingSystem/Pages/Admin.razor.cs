@@ -1,10 +1,10 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using VotingSystem.Data;
 using VotingSystem.Data.Enum;
 using VotingSystem.Services.Abstraction;
 using VotingSystem.Shared;
+using Notification = VotingSystem.Data.Notification;
 
 namespace VotingSystem.Pages;
 
@@ -48,6 +48,8 @@ public partial class Admin : AuthenticatedPage
     private Election _election = new();
     private List<User> _candidates = new();
     private List<(Guid candidateId, int votes)> _candidateVotes = new();
+    
+    private Notification _notification = new();
 
     protected override Task OnInitializedAsync()
     {
@@ -85,6 +87,37 @@ public partial class Admin : AuthenticatedPage
 
     private void ElectionFormButtonPressed()
     {
+        if (String.IsNullOrEmpty(_formModel.Election.Name) ||
+            String.IsNullOrEmpty(_formModel.Election.Nation) ||
+            _formModel.Election.Type == null)
+        {
+            _notification.Header = "Invalid Input!";
+            _notification.Message = "All fields must have a value!";
+            _notification.Type = NotificationType.Failure;
+            _notification.Visible = true;
+            return;
+        }
+
+        if (_formModel.Election.EndTime <= _formModel.Election.StartTime)
+        {
+            _notification.Header = "Invalid Input!";
+            _notification.Message = "The end time must be after the start time!";
+            _notification.Type = NotificationType.Failure;
+            _notification.Visible = true;
+            return;
+        }
+        
+        if (_formModel.ElectionInvites.Count == 0)
+        {
+            _notification.Header = "Invalid Input!";
+            _notification.Message = "Please invite at least one candidate!";
+            _notification.Type = NotificationType.Failure;
+            _notification.Visible = true;
+            return;
+        }
+
+        _notification.Visible = false;
+        
         switch (_formModel.ButtonText)
         {
             case "Create Election":
@@ -100,12 +133,6 @@ public partial class Admin : AuthenticatedPage
     
     private void CreateElection()
     {
-        if (_formModel.Election.EndTime < _formModel.Election.StartTime)
-        {
-            
-            return;
-        }
-        
         if (_electionService.CreateElection(_formModel.Election, _userId, _formModel.ElectionInvites))
         {
             _administeredElections = _userService.GetUsersAdministeredElections(_userId);
