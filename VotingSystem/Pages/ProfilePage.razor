@@ -1,0 +1,22 @@
+@page "/profile"
+@inherits AuthenticatedPage
+
+<div class="page-container">
+    <h1 class="page-title text-center">Your Profile</h1>
+    <div class="content-panel">
+        <h2>Your Details</h2>
+        <strong>Name</strong>
+        <p>@_user.FirstNames @_user.Surname</p>
+        <br/>
+        <strong>Email</strong>
+        <p>@_user.EmailAddress</p>
+        <br/>
+        <strong>Phone Number</strong>
+        <p>@_user.PhoneNumber</p>
+        <br/>
+    </div>
+    <div class="content-panel">
+        <h2>Admin</h2>
+        <a href="/admin" class="btn btn-accent">View Admin Panel</a>
+    </div>
+</div>
