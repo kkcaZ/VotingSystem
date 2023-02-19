@@ -24,7 +24,7 @@ public class UserDataAccessTests
 
     public UserDataAccessTests()
     {
-        _userDataAccess = new UserDataAccess();
+        // _userDataAccess = new UserDataAccess();
     }
     
     [SetUp]

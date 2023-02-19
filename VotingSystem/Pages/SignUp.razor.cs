@@ -37,6 +37,10 @@ public partial class SignUp
         _signupStage = "login-form stage-2";
     }
     
+    /// <summary>
+    /// Validate the national identifier when changed
+    /// </summary>
+    /// <param name="e"></param>
     private void NationalIdUpdated(ChangeEventArgs e)
     {
         if (e == null || e.Value == null)
@@ -53,7 +57,8 @@ public partial class SignUp
     }
     
     /// <summary>
-    /// Handles displaying different stages of login / sign-up to the user
+    /// Validates user input & calls server to create user in the database.
+    /// If successful, redirects to home page with the user logged in.
     /// </summary>
     private async Task SignUpButton()
     {

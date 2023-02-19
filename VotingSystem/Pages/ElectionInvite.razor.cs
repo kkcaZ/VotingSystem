@@ -27,6 +27,10 @@ public partial class ElectionInvite : AuthenticatedPage
             StateHasChanged();
     }
 
+    /// <summary>
+    /// Calls services to add the user to be a candidate in the election with <paramref name="electionId"/>
+    /// </summary>
+    /// <param name="electionId"></param>
     private void AcceptInvite(Guid electionId)
     {
         _electionService.AddCandidate(_userId, electionId);
@@ -40,6 +44,10 @@ public partial class ElectionInvite : AuthenticatedPage
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Calls services to update the invite status to be declined for user in election with <paramref name="electionId"/> 
+    /// </summary>
+    /// <param name="electionId"></param>
     private void DeclinedInvite(Guid electionId)
     {
         _userService.UpdateElectionInvite(_userId, electionId, ElectionInviteStatus.Declined);

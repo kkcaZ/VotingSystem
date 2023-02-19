@@ -16,30 +16,35 @@ public class ElectionService : IElectionService
         _userService = userService;
     }
 
+    /// <inheritdoc/>
     public Election GetElectionById(Guid electionId)
     {
         Election election = _electionDataAccess.GetById(electionId);
         return election;
     }
 
+    /// <inheritdoc/>
     public List<Election> GetElectionsByNation(string nation)
     {
         var elections = _electionDataAccess.GetByNation(nation);
         return elections;
     }
 
+    /// <inheritdoc/>
     public List<ElectionInviteModel> GetElectionCandidateInvites(Guid electionId)
     {
         List<ElectionInviteModel> invites = _electionDataAccess.GetElectionInvites(electionId);
         return invites;
     }
 
+    /// <inheritdoc/>
     public List<User> GetCandidates(Guid electionId)
     {
         List<User> candidates = _electionDataAccess.GetCandidates(electionId);
         return candidates;
     }
 
+    /// <inheritdoc/>
     public bool CreateElection(Election election, Guid adminId, List<ElectionInviteModel> invitedEmails)
     {
         election.Id = Guid.NewGuid();
@@ -58,9 +63,15 @@ public class ElectionService : IElectionService
 
         return true;
     }
-
+    
+    /// <inheritdoc/>
     public bool DeleteElection(Guid electionId)
     {
+        _electionDataAccess.DeleteAllCandidates(electionId);
+        _electionDataAccess.DeleteAllAdmins(electionId);
+        _electionDataAccess.DeleteAllElectionInvites(electionId);
+        _electionDataAccess.DeleteAllVotes(electionId);
+        
         var rowsAffected = _electionDataAccess.Delete(electionId);
         
         if (rowsAffected == 0)
@@ -69,6 +80,7 @@ public class ElectionService : IElectionService
         return true;
     }
 
+    /// <inheritdoc/>
     public bool UpdateElection(Election election, List<ElectionInviteUpdate> inviteUpdates)
     {
         // Update base details
@@ -102,6 +114,7 @@ public class ElectionService : IElectionService
         return true;
     }
 
+    /// <inheritdoc/>
     public bool AddCandidate(Guid userId, Guid electionId)
     {
         var rowsAffected = _electionDataAccess.AddCandidate(userId, electionId);
@@ -112,6 +125,7 @@ public class ElectionService : IElectionService
         return true;
     }
 
+    /// <inheritdoc/>
     public bool DeleteCandidate(Guid electionId, Guid userId)
     {
         var rowsAffected = _electionDataAccess.DeleteCandidate(userId, electionId);

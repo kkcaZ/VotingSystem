@@ -9,12 +9,12 @@ public class VoteDataAccess : IVoteDataAccess
 {
     private readonly string _connectionString = @"Server=127.0.0.1,1433;Database=VotingDb;User ID=SA;Password=Password123!";
 
+    /// <inheritdoc/>
     public Vote? Get(Guid electionId, Guid voterId)
     {
         try
         {
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
 
             string sql = @"
                 SELECT *
@@ -27,8 +27,7 @@ public class VoteDataAccess : IVoteDataAccess
 
             if (!voteCount.Any())
                 return null;
-            
-            conn.Close();
+
             return voteCount.First();
         }
         catch (SqlException e)
@@ -38,12 +37,12 @@ public class VoteDataAccess : IVoteDataAccess
         }
     }
     
+    /// <inheritdoc/>
     public int GetCandidateVoteCount(Guid electionId, Guid candidateId)
     {
         try
         {
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
 
             string sql = @"
                 SELECT COUNT(*) 
@@ -53,8 +52,6 @@ public class VoteDataAccess : IVoteDataAccess
             ";
             
             var voteCount = conn.Query<int>(sql, new { ElectionId = electionId, CandidateId = candidateId }).First();
-            
-            conn.Close();
             return voteCount;
         }
         catch (SqlException e)
@@ -64,12 +61,12 @@ public class VoteDataAccess : IVoteDataAccess
         }
     }
     
+    /// <inheritdoc/>
     public int Add(Vote vote)
     {
         try
         {
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
 
             string sql = @"
                 INSERT INTO [Vote] ([ElectionId], [CandidateId], [VoterId], [Timestamp]) 
@@ -77,8 +74,6 @@ public class VoteDataAccess : IVoteDataAccess
             ";
             
             var rowsAffected = conn.Execute(sql, vote);
-            
-            conn.Close();
             return rowsAffected;
         }
         catch (SqlException e)
