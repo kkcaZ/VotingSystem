@@ -1,0 +1,12 @@
+services:
+  voting-system:
+    build: ./VotingSystem/
+    ports:
+      - "3000:80"
+      - "3001:443"
+    links:
+      - "mssql"
+  mssql:
+    build: ./MSSQLServer/
+    ports:
+      - "1433:1433"
