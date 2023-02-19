@@ -85,6 +85,9 @@ public partial class Admin : AuthenticatedPage
         }
     }
 
+    /// <summary>
+    /// Validates election form & decides whether to call <see cref="CreateElection"/> or <see cref="SaveElectionChanges"/>
+    /// </summary>
     private void ElectionFormButtonPressed()
     {
         if (String.IsNullOrEmpty(_formModel.Election.Name) ||
@@ -131,6 +134,10 @@ public partial class Admin : AuthenticatedPage
         }
     }
     
+    /// <summary>
+    /// Calls <see cref="_electionService"/> to create election using details in <see cref="_formModel"/>
+    /// If successful, it goes back to the election panel & refreshes the list of administered elections 
+    /// </summary>
     private void CreateElection()
     {
         if (_electionService.CreateElection(_formModel.Election, _userId, _formModel.ElectionInvites))
@@ -141,6 +148,10 @@ public partial class Admin : AuthenticatedPage
         }
     }
 
+    /// <summary>
+    /// Calls <see cref="_electionService"/> to delete election
+    /// </summary>
+    /// <param name="id"></param>
     private void DeleteElection(Guid id)
     {
         _electionService.DeleteElection(id);
@@ -148,6 +159,10 @@ public partial class Admin : AuthenticatedPage
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Opens election details panel & retrieves required data for election with <paramref name="electionId"/>
+    /// </summary>
+    /// <param name="electionId"></param>
     private void ViewElectionDetails(Guid electionId)
     {
         _election = _electionService.GetElectionById(electionId);
@@ -157,6 +172,9 @@ public partial class Admin : AuthenticatedPage
         _adminPanel = AdminPanel.ViewElection;
     }
 
+    /// <summary>
+    /// Calls <see cref="_electionService"/> to update the election using the details in <see cref="_formModel"/>
+    /// </summary>
     private void SaveElectionChanges()
     {
         if (_electionService.UpdateElection(_formModel.Election, _formModel.InviteChanges))
@@ -167,6 +185,9 @@ public partial class Admin : AuthenticatedPage
         }
     }
 
+    /// <summary>
+    /// Opens create election panel & sets default form values
+    /// </summary>
     private void OpenCreateElectionPanel()
     {
         _adminPanel = AdminPanel.CreateElection;
@@ -178,6 +199,9 @@ public partial class Admin : AuthenticatedPage
         _formModel.ElectionInvites = new();
     }
     
+    /// <summary>
+    /// Opens edit election panel & sets default form values
+    /// </summary>
     private void OpenEditElectionPanel(Guid electionId)
     {
         _adminPanel = AdminPanel.CreateElection;
@@ -194,11 +218,17 @@ public partial class Admin : AuthenticatedPage
         };
     }
 
+    /// <summary>
+    /// Opens election list panel
+    /// </summary>
     private void OpenElectionListPanel()
     {
         _adminPanel = AdminPanel.ElectionList;
     }
 
+    /// <summary>
+    /// Formats invite from <see cref="_formModel"/> & tracks the change in <see cref="_formModel"/>
+    /// </summary>
     private void AddCandidateInvite()
     {
         // Init invite
@@ -223,6 +253,13 @@ public partial class Admin : AuthenticatedPage
         _formModel.CandidateEmail = string.Empty;
     }
     
+    /// <summary>
+    /// If change is in <see cref="_formModel"/> invite changes, then remove it from there
+    /// Otherwise, create a new change that indicates this candidate invite needs to be removed from the db once saved.
+    /// </summary>
+    /// <param name="electionId"></param>
+    /// <param name="userEmail"></param>
+    /// <param name="status"></param>
     private void RemoveCandidateInvite(Guid electionId, string userEmail, ElectionInviteStatus status)
     {
         var invite = _formModel.ElectionInvites.FirstOrDefault(x => x.ElectionId == electionId && x.UserEmail == userEmail);

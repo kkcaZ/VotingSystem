@@ -41,6 +41,10 @@ public partial class VotePage : AuthenticatedPage
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Calls server to submit vote for user
+    /// </summary>
+    /// <param name="candidateId"></param>
     private void SubmitVote(Guid candidateId)
     {
         if (_voteService.SubmitVote(_userId, candidateId, _electionId))

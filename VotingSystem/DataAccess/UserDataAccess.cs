@@ -8,26 +8,28 @@ namespace VotingSystem.DataAccess;
 
 public class UserDataAccess : IUserDataAccess
 {
+    private readonly ILogger<UserDataAccess> _logger;
+    
     private readonly string _connectionString = @"Server=127.0.0.1,1433;Database=VotingDb;User ID=SA;Password=Password123!";
+
+    public UserDataAccess(ILogger<UserDataAccess> logger)
+    {
+        _logger = logger;
+    }
     
     /// <inheritdoc/>
     public User? GetById(Guid id)
     {
         try
         {
-            // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            // Execute query
+            
             string sql = "SELECT * FROM [User] WHERE [Id] = @Id";
             List<User> users = conn.Query<User>(sql, new { Id = id }).ToList();
 
             if (users.Count == 0)
                 return null;
             
-            // Close connection
-            conn.Close();
             return users[0];
         }
         catch (SqlException e)
@@ -42,19 +44,14 @@ public class UserDataAccess : IUserDataAccess
     {
         try
         {
-            // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            // Execute query
+            
             string sql = "SELECT * FROM [User] WHERE [EmailAddress] = @EmailAddress";
             List<User> users = conn.Query<User>(sql, new { EmailAddress = email }).ToList();
 
             if (users.Count == 0)
                 return null;
             
-            // Close connection
-            conn.Close();
             return users.First();
         }
         catch (SqlException e)
@@ -69,11 +66,8 @@ public class UserDataAccess : IUserDataAccess
     {
         try
         {
-            // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            // Execute query
+            
             string sql = @"
                 SELECT * FROM [Election] e
                 INNER JOIN ElectionAdmin ea
@@ -82,8 +76,6 @@ public class UserDataAccess : IUserDataAccess
             ";
             List<Election> elections = conn.Query<Election>(sql, new { UserId = id }).ToList();
 
-            // Close connection
-            conn.Close();
             return elections;
         }
         catch (SqlException e)
@@ -98,11 +90,9 @@ public class UserDataAccess : IUserDataAccess
     {
         try
         {
-            // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            // Execute query
+            
+            
             string sql = @"
                 SELECT * FROM [Election] e
                 INNER JOIN ElectionInvite ei
@@ -111,8 +101,6 @@ public class UserDataAccess : IUserDataAccess
             ";
             List<Election> elections = conn.Query<Election>(sql, new { Email = email }).ToList();
 
-            // Close connection
-            conn.Close();
             return elections;
         }
         catch (SqlException e)
@@ -127,24 +115,19 @@ public class UserDataAccess : IUserDataAccess
     {
         try
         {
-            // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
 
-            // Execute query
             string sql = "SELECT * FROM [User] WHERE [NationalIdentifier] = @NationalIdentifier";
             List<User> users = conn.Query<User>(sql, new { NationalIdentifier = nationalIdentifier }).ToList();
 
             if (users.Count == 0)
                 return null;
-            
-            // Close connection
-            conn.Close();
+
             return users.First();
         }
         catch (SqlException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError(e, "{Message}", e.Message);
             return null;
         }
     }
@@ -155,16 +138,13 @@ public class UserDataAccess : IUserDataAccess
         try
         {
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
+            
             string sql = @"
                 INSERT INTO [User] (Id, FirstNames, Surname, PhoneNumber, EmailAddress, PostCode, Address, NationalIdentifier, Nationality, Password) 
                 VALUES (@Id, @FirstNames, @Surname, @PhoneNumber, @EmailAddress, @PostCode, @Address, @NationalIdentifier, @Nationality, @Password)
             ";
             
             var rowsAffected = conn.Execute(sql, user);
-            
-            conn.Close();
             return rowsAffected;
         }
         catch (SqlException e)
@@ -179,20 +159,14 @@ public class UserDataAccess : IUserDataAccess
     {
         try
         {
-            // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            // Execute query
+            
             string sql = @"
                 DELETE FROM [User]
                 WHERE [Id] = @Id
             ";
             
             var rowsAffected = conn.Execute(sql, new { Id = id });
-
-            // Close connection
-            conn.Close();
             return rowsAffected;
         }
         catch (SqlException e)
@@ -207,11 +181,8 @@ public class UserDataAccess : IUserDataAccess
     {
         try
         {
-            // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            // Execute query
+            
             string sql = @"
                 UPDATE [User] 
                 SET 
@@ -229,9 +200,6 @@ public class UserDataAccess : IUserDataAccess
             ";
             
             var rowsAffected = conn.Execute(sql, user);
-
-            // Close connection
-            conn.Close();
             return rowsAffected;
         }
         catch (SqlException e)
@@ -246,11 +214,8 @@ public class UserDataAccess : IUserDataAccess
     {
         try
         {
-            // Open connection
             using SqlConnection conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            // Execute query
+            
             string sql = @"
                 UPDATE [ElectionInvite] 
                 SET 
@@ -259,9 +224,6 @@ public class UserDataAccess : IUserDataAccess
             ";
             
             var rowsAffected = conn.Execute(sql, new { StatusId = status, ElectionId = electionId, UserEmail = userEmail });
-
-            // Close connection
-            conn.Close();
             return rowsAffected;
         }
         catch (SqlException e)

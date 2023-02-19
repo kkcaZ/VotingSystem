@@ -46,11 +46,19 @@ public partial class Login : ComponentBase
         return base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Update form stage when nationality has been changed
+    /// </summary>
+    /// <param name="e"></param>
     private void NationalityUpdated(ChangeEventArgs e)
     {
         _loginStage = "login-form stage-2";
     }
 
+    /// <summary>
+    /// Validate the national identifier when changed
+    /// </summary>
+    /// <param name="e"></param>
     private void UniqueIdUpdated(ChangeEventArgs e)
     {
         if (e == null || e.Value == null)
@@ -67,7 +75,7 @@ public partial class Login : ComponentBase
     }
 
     /// <summary>
-    /// Handles displaying different stages of login / sign-up to the user
+    /// Authenticates users login details with the server.
     /// </summary>
     private void SignInButton()
     {

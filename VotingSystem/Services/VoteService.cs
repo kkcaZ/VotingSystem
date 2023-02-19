@@ -16,6 +16,7 @@ public class VoteService : IVoteService
         _electionService = electionService;
     }
 
+    /// <inheritdoc/>
     public List<(Guid candidateId, int voteCount)> CountElectionVotes(Guid electionId)
     {
         var candidates = _electionService.GetCandidates(electionId);
@@ -30,12 +31,14 @@ public class VoteService : IVoteService
         return voteCounts;
     }
     
+    /// <inheritdoc/>
     public int CountCandidateVotes(Guid electionId, Guid candidateId)
     {
         var candidateVoteCount = _voteDataAccess.GetCandidateVoteCount(electionId, candidateId);
         return candidateVoteCount;
     }
 
+    /// <inheritdoc/>
     public bool SubmitVote(Guid voterId, Guid candidateId, Guid electionId)
     {
         return SubmitVote(new Vote()
@@ -47,6 +50,7 @@ public class VoteService : IVoteService
         });
     }
     
+    /// <inheritdoc/>
     public bool SubmitVote(Vote vote)
     {
         var rowsAffected = _voteDataAccess.Add(vote);
@@ -57,6 +61,7 @@ public class VoteService : IVoteService
         return true;
     }
 
+    /// <inheritdoc/>
     public bool HasUserVoted(Guid electionId, Guid voterId)
     {
         return _voteDataAccess.Get(electionId, voterId) != null;
