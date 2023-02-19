@@ -9,12 +9,13 @@ namespace VotingSystem.DataAccess;
 public class ElectionDataAccess : IElectionDataAccess
 {
     private readonly ILogger<ElectionDataAccess> _logger;
-    
-    private readonly string _connectionString = @"Server=127.0.0.1,1433;Database=VotingDb;User ID=SA;Password=Password123!";
 
-    public ElectionDataAccess(ILogger<ElectionDataAccess> logger)
+    private readonly string _connectionString;
+
+    public ElectionDataAccess(ILogger<ElectionDataAccess> logger, IConfiguration configuration)
     {
         _logger = logger;
+        _connectionString = configuration["ConnectionString"];
     }
     
     /// <inheritdoc/>

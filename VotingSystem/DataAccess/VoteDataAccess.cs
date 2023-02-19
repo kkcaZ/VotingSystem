@@ -7,8 +7,16 @@ namespace VotingSystem.DataAccess;
 
 public class VoteDataAccess : IVoteDataAccess
 {
-    private readonly string _connectionString = @"Server=127.0.0.1,1433;Database=VotingDb;User ID=SA;Password=Password123!";
+    private readonly ILogger<VoteDataAccess> _logger;
+    
+    private readonly string _connectionString;
 
+    public VoteDataAccess(ILogger<VoteDataAccess> logger, IConfiguration configuration)
+    {
+        _logger = logger;
+        _connectionString = configuration["ConnectionString"];
+    }
+    
     /// <inheritdoc/>
     public Vote? Get(Guid electionId, Guid voterId)
     {
@@ -32,7 +40,7 @@ public class VoteDataAccess : IVoteDataAccess
         }
         catch (SqlException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError(e, "{Message}", e.Message);
             return null;
         }
     }
@@ -56,7 +64,7 @@ public class VoteDataAccess : IVoteDataAccess
         }
         catch (SqlException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError(e, "{Message}", e.Message);
             return 0;
         }
     }
@@ -78,7 +86,7 @@ public class VoteDataAccess : IVoteDataAccess
         }
         catch (SqlException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError(e, "{Message}", e.Message);
             return 0;
         }
     }
